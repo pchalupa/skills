@@ -1,0 +1,33 @@
+{
+  "skill_name": "acli-cli",
+  "evals": [
+    {
+      "id": 1,
+      "name": "bulk-transition-stale-review",
+      "prompt": "I'm getting buried by stale Code Review tickets. In our PAY project, find every work item that's been sitting in status 'Code Review' for more than 5 days and move it back to 'In Progress'. I want it to skip the confirmation prompt and not abort if any single one fails. Give me the exact acli command(s).",
+      "expected_output": "A single `acli jira workitem transition` command that uses --jql with the right query, --status \"In Progress\", --yes, and --ignore-errors. Should NOT use a separate search-then-loop approach when a one-shot bulk transition is available.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "epic-with-children-from-template",
+      "prompt": "In our TEAM Jira project I need to spin up an epic called 'Auth migration to OAuth2' and three child stories under it: 'Spike: token storage strategy', 'Implement refresh token rotation', and 'Migrate legacy session middleware'. Each story should have label 'auth-migration'. Walk me through the acli commands to do this end-to-end.",
+      "expected_output": "Two-step approach: (1) create the epic and capture its key (using --json + jq, or instructing the user to copy the key), (2) create the three children either with three workitem create calls passing --parent <EPIC>, or with workitem create-bulk using --from-json. Should mention --type Epic and --type Story explicitly, and include --label auth-migration.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "weekly-csv-report-from-jql",
+      "prompt": "Can you give me an acli one-liner that exports every work item created in the last 7 days in the FOO project as a CSV with columns key, summary, assignee, status, and created? I want to attach it to a weekly email.",
+      "expected_output": "Single `acli jira workitem search` command with --jql \"project = FOO AND created >= -7d\", --fields \"key,summary,assignee,status,created\", --csv. Should redirect to a .csv file. Bonus: mentions --paginate if the result might exceed a page.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "confluence-page-storage-dump",
+      "prompt": "I want to grab the raw 'storage format' body of Confluence page 4521987 and save it as page.html so I can diff two versions. What's the acli command?",
+      "expected_output": "An `acli confluence page view --id 4521987 --body-format storage --json` piped through jq to extract `.body.storage.value` and redirected to page.html. Should not claim there's an `acli confluence page export` or similar non-existent command.",
+      "files": []
+    }
+  ]
+}
