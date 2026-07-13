@@ -1,6 +1,6 @@
 ---
 name: acli-cli
-description: Atlassian CLI (acli) reference for working with Jira Cloud and Confluence Cloud from the command line — work items (issues), projects, sprints, boards, filters, dashboards, Confluence spaces, blog posts, page viewing, org admin, and Rovo Dev. Use this skill whenever the user mentions acli, the Atlassian CLI, or asks to script anything against Jira or Confluence (creating issues/work items, JQL searches, bulk transitions, sprint management, Confluence space/blog operations, etc.) — even when they don't say "acli" by name.
+description: Atlassian CLI (acli) reference for working with Jira Cloud and Confluence Cloud from the command line — Jira tickets (work items), projects, sprints, boards, filters, plus Confluence spaces, blog posts, and page viewing. Use this skill whenever the user mentions acli, the Atlassian CLI, or asks to script anything against Jira or Confluence (creating tickets, JQL searches, bulk transitions, project management, Confluence space/blog operations, etc.) — even when they don't say "acli" by name.
 ---
 
 # Atlassian CLI (acli)
@@ -9,7 +9,7 @@ Reference for `acli`, Atlassian's official CLI for Jira Cloud and Confluence Clo
 
 **Version reference:** 1.3.18-stable (verify with `acli --version`).
 
-**Scope today:** Jira Cloud, Confluence Cloud, organization admin (user management), and Rovo Dev (AI coding agent). Bitbucket is **not** part of this CLI yet — use `git` and the Bitbucket REST API for that.
+**Scope:** Jira Cloud (work items, projects, sprints, boards, filters) and Confluence Cloud (spaces, blogs, page viewing). Org admin, Rovo Dev, custom fields, dashboards, and Bitbucket are out of scope here — for Bitbucket use `git` and the Bitbucket REST API.
 
 ## Mental model — what makes acli different from gh
 
@@ -52,19 +52,17 @@ acli auth switch --site mysite.atlassian.net --email user@example.com
 acli auth logout
 ```
 
-Rovo Dev uses a separate, scoped API token (see the Rovo Dev section below) — `acli auth login` does not cover it.
-
-## CLI Structure
+## CLI structure
 
 ```
-acli                                 # Root
+acli
 ├── auth                             # Global OAuth (covers Jira + Confluence)
 │   ├── login
 │   ├── logout
 │   ├── status
 │   └── switch
 ├── jira
-│   ├── workitem                     # Stories, tasks, bugs, epics (formerly "issues")
+│   ├── workitem                     # Stories, tasks, bugs, epics
 │   │   ├── archive / unarchive
 │   │   ├── assign
 │   │   ├── attachment {list,delete}
@@ -79,24 +77,13 @@ acli                                 # Root
 │   │   ├── view
 │   │   └── watcher {list,remove}
 │   ├── project {create,view,list,update,archive,restore,delete}
-│   ├── sprint {create,update,view,delete,list-workitems}
-│   ├── board {create,get,search,delete,list-projects,list-sprints}
-│   ├── filter {get,list,search,update,get-columns,reset-columns,
-│   │           add-favourite,change-owner}
-│   ├── field {create,update,delete,cancel-delete}     # custom fields
-│   └── dashboard {search}
-├── confluence
-│   ├── page {view}                  # view only — no create/edit yet
-│   ├── space {create,view,list,update,archive,restore}
-│   └── blog {create,view,list}
-├── admin
-│   ├── auth                         # admin-scoped auth
-│   └── user {activate,deactivate,delete,cancel-delete}
-├── rovodev                          # AI coding agent (separate auth)
-├── config
-│   └── gov-cloud                    # Atlassian Government Cloud setting
-├── completion                       # Shell completion
-└── feedback                         # Send feedback to Atlassian
+│   ├── sprint {view,list-workitems}
+│   ├── board {search,get,list-sprints}
+│   └── filter {list,get,search}
+└── confluence
+    ├── page {view}                  # view only — no create/edit yet
+    ├── space {create,view,list,update,archive,restore}
+    └── blog {create,view,list}
 ```
 
 ## Common flags
@@ -117,7 +104,7 @@ acli                                 # Root
 | `--paginate`     | Fetch all results across pages (search, filter list).                                             |
 | `--limit N`      | Cap result count.                                                                                 |
 
-## Jira: work items
+## Work items
 
 Work items (formerly "issues") are the central resource. Most workflows route through `acli jira workitem`.
 
@@ -384,92 +371,33 @@ acli jira project restore --key TEAM
 acli jira project delete --key TEAM --yes
 ```
 
-## Jira: sprints
+## Sprints, boards, filters (lookups for ticket workflows)
 
-Sprints belong to a board. You'll typically need a board ID; get it via `acli jira board search`.
+You'll often need a sprint, board, or saved filter to scope ticket queries. The relevant lookups:
 
 ```bash
-# Find the board
+# Find a board by name
 acli jira board search --name "Team Alpha" --json
 
-# Create a sprint
-acli jira sprint create --board 5 --name "Sprint 24" \
-  --start 2026-05-13 --end 2026-05-27 \
-  --goal "Close out auth migration"
-
-# Update (rename, change dates, set goal, transition state)
-acli jira sprint update --id 37 --name "Sprint 24 - extended"
-acli jira sprint update --id 37 --state active        # active | closed | future
-acli jira sprint update --id 37 --start 2026-05-15 --end 2026-05-29
-
-# View / list work items in a sprint
-acli jira sprint view --id 37 --json
-acli jira sprint list-workitems --id 37 --fields "key,summary,status,assignee"
-
-# Delete
-acli jira sprint delete --id 37 --yes
-```
-
-## Jira: boards
-
-```bash
-# Search boards
-acli jira board search --name "Alpha" --json
-
-# Get a board's details
+# View a board
 acli jira board get --id 5 --json
 
-# Create a scrum or kanban board (needs a filter ID)
-acli jira board create --name "Alpha Scrum" --type scrum \
-  --filter-id 10040 --location-type project --project TEAM
-
-# Discover the projects/sprints attached to a board
-acli jira board list-projects --id 5
+# List the sprints on a board (useful for "what's the current sprint ID?")
 acli jira board list-sprints --id 5 --json
 
-# Delete
-acli jira board delete --id 5 --yes
-```
+# View a sprint
+acli jira sprint view --id 37 --json
 
-## Jira: filters and dashboards
+# List the work items in a sprint
+acli jira sprint list-workitems --id 37 --fields "key,summary,status,assignee"
 
-```bash
-# List your favourites + owned filters
+# Saved filters — use the returned ID with --filter on workitem search/edit/transition
 acli jira filter list --json
-
-# Search across filters by name or owner
-acli jira filter search --name "release" --owner user@example.com
-
-# Get one filter by ID
 acli jira filter get --id 10001 --json
-
-# Manage columns for a filter
-acli jira filter get-columns --id 10001
-acli jira filter reset-columns --id 10001
-
-# Update filter (name, JQL, sharing)
-acli jira filter update --id 10001 --name "Open bugs (mine)"
-
-# Mark a filter as favourite, or change owner
-acli jira filter add-favourite --id 10001
-acli jira filter change-owner --id 10001 --owner new.owner@example.com
-
-# Search dashboards
-acli jira dashboard search --name "Release health" --json
+acli jira filter search --name "release"
 ```
 
-## Jira: custom fields
-
-```bash
-# Create a custom field
-acli jira field create --generate-json > field.json
-acli jira field create --from-json field.json
-
-# Update / delete (delete moves to trash; cancel-delete restores)
-acli jira field update --id customfield_10100 --name "Priority Tier"
-acli jira field delete --id customfield_10100
-acli jira field cancel-delete --id customfield_10100
-```
+For creating or updating sprints, boards, or filters themselves, use the Jira UI or REST API — they're outside the ticket-management scope of this skill.
 
 ## Confluence
 
@@ -536,32 +464,6 @@ acli confluence blog create --space-id 12345 --title "Internal" --private \
 acli confluence blog view --id 98765 --json
 ```
 
-## Admin (organization)
-
-Requires admin auth (`acli admin auth`). Use carefully — these affect real users.
-
-```bash
-acli admin user activate --account-id <id>
-acli admin user deactivate --account-id <id>
-acli admin user delete --account-id <id>           # schedules deletion
-acli admin user cancel-delete --account-id <id>    # cancels scheduled deletion
-```
-
-## Rovo Dev (AI coding agent)
-
-Rovo Dev is Atlassian's AI coding agent. It uses a **separate** scoped API token, not the global OAuth from `acli auth login`.
-
-```bash
-# 1. Create a Rovo Dev API token at https://go.atlassian.com/rovo-dev-api-token
-# 2. Authenticate
-acli rovodev auth login --email user@example.com --token < ~/.config/rovodev-token
-
-# 3. Run a task
-acli rovodev run "explain the auth middleware in this repo"
-```
-
-Run `acli rovodev --help` for the full list of subcommands once authenticated.
-
 ## Output handling
 
 ```bash
@@ -626,17 +528,6 @@ acli confluence page view --id 123456789 --body-format storage --json \
   | jq -r '.body.storage.value' > page.html
 ```
 
-## Configuration
-
-```bash
-# Atlassian Government Cloud (set if your org uses it)
-acli config gov-cloud set true
-acli config gov-cloud get
-
-# Generate shell completion (zsh shown; bash/fish/powershell also supported)
-acli completion zsh > "${fpath[1]}/_acli"
-```
-
 ## Help and feedback
 
 ```bash
@@ -652,5 +543,3 @@ acli feedback
 
 - Official docs: https://developer.atlassian.com/cloud/acli/
 - JQL reference: https://support.atlassian.com/jira-software-cloud/docs/use-advanced-search-with-jira-query-language-jql/
-- Rovo Dev token: https://go.atlassian.com/rovo-dev-api-token
-- Confluence storage format: https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html

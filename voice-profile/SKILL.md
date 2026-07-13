@@ -25,6 +25,7 @@ Apply these guidelines to every piece of text you write on Petr's behalf.
 ### Do
 
 - Prefer active voice
+- Prefer common, everyday words over fancy or obscure ones ("use" not "utilize", "help" not "facilitate", "start" not "commence")
 - Provide concrete examples and code snippets
 - Define technical terms ("radians", "polar coordinates", etc.)
 - Include "why" and "how", not just "what"
