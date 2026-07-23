@@ -9,13 +9,13 @@ abstractions rather than inventing new abstraction levels.**
 
 People often ask to add levels (subsystems, DDD bounded contexts, architectural
 layers, libraries). Resist that. The power of C4 is its *fixed* small set of
-abstractions. Instead, overlay these concepts as **groupings** (a `Boundary`
-box) around existing elements:
+abstractions. Instead, overlay these concepts as **groupings** (a nested
+`subgraph`, styled distinctly and named in the key) around existing elements:
 
-- **Architectural layers** (UI / business logic / data) → a `Boundary` grouping
+- **Architectural layers** (UI / business logic / data) → a `subgraph` grouping
   the components within a container. The layers don't replace components; they
   organise them.
-- **Modules/libraries** (.jar, .dll, Maven/Gradle modules) → a `Boundary`
+- **Modules/libraries** (.jar, .dll, Maven/Gradle modules) → a `subgraph`
   grouping the components sourced from each module.
 - **DDD bounded context** → a grouping of systems, containers, or components
   depending on how it maps to the code/org.
@@ -37,21 +37,22 @@ one system boundary. Straightforward.
 **Stage 2 — Microservices, one team, one repo, one system.** Each service is
 typically an **API container + its own database-schema container** — i.e. a
 **group of containers**, not a single container. All of them live inside the one
-`System_Boundary`. Wrap each service's container pair in a `Boundary(..., "group")`
-so the service is visually obvious:
+system subgraph. Wrap each service's container pair in a nested `subgraph`
+(styled as a grouping, not a system boundary) so the service is visually obvious:
 
 ```
-System_Boundary(xyz, "XYZ") {
-    Container(ui, "Web App", "…", "…")
-    Boundary(svcA, "Service A", "microservice") {
-        Container(apiA, "Service A API", "Java", "…")
-        ContainerDb(dbA, "Service A DB", "MySQL schema", "…")
-    }
-    Boundary(svcB, "Service B", "microservice") {
-        Container(apiB, "Service B API", "Java", "…")
-        ContainerDb(dbB, "Service B DB", "MySQL schema", "…")
-    }
-}
+flowchart TB
+    subgraph xyz["XYZ [Software System]"]
+        ui["Web App<br/><i>[Container: …]</i><br/>…"]
+        subgraph svcA["Service A [microservice]"]
+            apiA["Service A API<br/><i>[Container: Java]</i><br/>…"]
+            dbA[("Service A DB<br/><i>[Container: MySQL schema]</i><br/>…")]
+        end
+        subgraph svcB["Service B [microservice]"]
+            apiB["Service B API<br/><i>[Container: Java]</i><br/>…"]
+            dbB[("Service B DB<br/><i>[Container: MySQL schema]</i><br/>…")]
+        end
+    end
 ```
 
 Why not model a microservice as one container labeled "Java and MySQL"? Because
@@ -78,17 +79,18 @@ The common mistake is a hub-and-spoke diagram with a central **"Message Bus"**
 that everything "sends messages to". A C4 container is an application or a data
 store — a message bus is neither, and the hub obscures the real coupling.
 
-**Model each queue/topic as a data-store container** (`ContainerQueue`). This
-exposes the true producer→consumer relationships:
+**Model each queue/topic as a data-store container** — a subroutine-shaped node
+(`[[ … ]]`). This exposes the true producer→consumer relationships:
 
 ```
-System_Boundary(xyz, "XYZ") {
-    Container(a, "Service A", "…", "Produces events.")
-    Container(c, "Service C", "…", "Consumes events.")
-    ContainerQueue(q1, "Queue 1", "RabbitMQ", "Customer update events.")
-}
-Rel(a, q1, "Sends customer update events to", "AMQP")
-Rel(q1, c, "Subscribes to customer update events from", "AMQP")
+flowchart TB
+    subgraph xyz["XYZ [Software System]"]
+        a["Service A<br/><i>[Container: …]</i><br/>Produces events."]
+        c["Service C<br/><i>[Container: …]</i><br/>Consumes events."]
+        q1[["Queue 1<br/><i>[Container: RabbitMQ]</i><br/>Customer update events."]]
+    end
+    a -->|"Sends customer update events to<br/>[AMQP]"| q1
+    q1 -->|"Subscribes to customer update events from<br/>[AMQP]"| c
 ```
 
 Notes:

@@ -56,8 +56,9 @@ root cause of bad diagrams. Use these definitions and heuristics:
   inside one team's system, or as a **software system** when a separate team
   owns it. See `references/advanced-patterns.md`.
 - **Message queues/topics are data-store containers**, not a "message bus"
-  software system. Model each queue/topic as a `ContainerQueue`. This reveals
-  the real producer→consumer coupling. See `references/advanced-patterns.md`.
+  software system. Model each queue/topic as its own data-store container (a
+  subroutine-shaped `[[ … ]]` node). This reveals the real producer→consumer
+  coupling. See `references/advanced-patterns.md`.
 - **External vs. integral.** An external SaaS you merely call (e.g. an email
   API) is a *software system*. A cloud store whose contents/organization you own
   (e.g. an S3 bucket that's part of your system) is a *container*, even though a
@@ -99,61 +100,78 @@ enough for most teams. Add others only when they earn their keep.
 
 ## Step 3 — Render it in Mermaid
 
-Mermaid has native C4 diagram types. Read `references/mermaid-c4-syntax.md` for
-the full element/relationship/boundary/layout reference and worked examples of
-all five diagram types. Two inline examples to anchor the shape:
+Mermaid ships an experimental native C4 mode, but its auto-layout is unreliable
+and many renderers draw it incorrectly or not at all. **Render each C4 level as a
+styled `flowchart` instead** — you carry the C4 method by hand (type in every
+node, prepositional edge labels, subgraphs for boundaries, a legend), and get
+output that renders everywhere. Read `references/mermaid-flowchart-c4.md` for the
+full element/relationship/boundary/layout conventions and worked examples of all
+five diagram types. Two inline examples to anchor the shape:
 
 **System Context** (Internet Banking System, from the book):
 
 ```mermaid
-C4Context
-    title System Context diagram for Internet Banking System
+flowchart TB
+    customer(["Personal Banking Customer<br/><i>[Person]</i><br/>A customer of the bank with personal bank accounts."])
+    ib["Internet Banking System<br/><i>[Software System]</i><br/>Lets customers view accounts and make payments."]
+    core["Core Banking System<br/><i>[Software System, External]</i><br/>Stores accounts, transactions, and handles payments."]
+    ses["Amazon SES<br/><i>[Software System, External]</i><br/>Sends e-mails to customers (MFA, fraud alerts)."]
 
-    Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
-    System(ib, "Internet Banking System", "Lets customers view accounts and make payments.")
-    System_Ext(core, "Core Banking System", "Stores accounts, transactions, and handles payments.")
-    System_Ext(ses, "Amazon SES", "Sends e-mails to customers (MFA, fraud alerts).")
+    customer -->|"Views balances and makes payments using"| ib
+    ib -->|"Gets account data from and makes payments using"| core
+    ib -->|"Sends e-mail using"| ses
 
-    Rel(customer, ib, "Views balances and makes payments using")
-    Rel(ib, core, "Gets account data from and makes payments using", "XML/HTTPS")
-    Rel(ib, ses, "Sends e-mail using", "HTTPS")
-
-    UpdateLayoutConfig($c4ShapeInRow="2", $c4BoundaryInRow="1")
+    classDef person fill:#08427b,color:#fff,stroke:#052e56;
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
+    class customer person;
+    class ib system;
+    class core,ses ext;
 ```
+
+> Context-level relationships stay **high-level: no protocols or data formats**
+> (the book keeps them off this diagram). Technology on the arrows appears one
+> level down, on the container diagram — note how `XML/HTTPS` shows up there.
 
 **Container** (zooming into that system):
 
 ```mermaid
-C4Container
-    title Container diagram for Internet Banking System
+flowchart TB
+    customer(["Personal Banking Customer<br/><i>[Person]</i><br/>A customer of the bank."])
 
-    Person(customer, "Personal Banking Customer", "A customer of the bank.")
+    subgraph ib["Internet Banking System"]
+        spa["Single-Page App<br/><i>[Container: JavaScript, Angular]</i><br/>Provides Internet banking features in the browser."]
+        static["Static Content<br/><i>[Container: Directory]</i><br/>Delivers the SPA's HTML/CSS/JS."]
+        backend["Backend<br/><i>[Container: Java, Spring Boot]</i><br/>Provides a JSON/HTTP API to the SPA."]
+        db[("Database<br/><i>[Container: MySQL]</i><br/>Stores usernames and hashed credentials.")]
+        store[("Statement Store<br/><i>[Container: AWS S3]</i><br/>Caches generated PDF statements.")]
+    end
 
-    System_Boundary(ib, "Internet Banking System") {
-        Container(spa, "Single-Page App", "JavaScript, Angular", "Provides Internet banking features in the browser.")
-        Container(static, "Static Content", "Directory", "Delivers the SPA's HTML/CSS/JS.")
-        Container(backend, "Backend", "Java, Spring Boot", "Provides a JSON/HTTP API to the SPA.")
-        ContainerDb(db, "Database", "MySQL", "Stores usernames and hashed credentials.")
-        ContainerDb(store, "Statement Store", "AWS S3", "Caches generated PDF statements.")
-    }
+    core["Core Banking System<br/><i>[Software System, External]</i><br/>Stores accounts and transactions."]
+    ses["Amazon SES<br/><i>[Software System, External]</i><br/>Sends e-mails to customers."]
 
-    System_Ext(core, "Core Banking System", "Stores accounts and transactions.")
-    System_Ext(ses, "Amazon SES", "Sends e-mails to customers.")
+    customer -->|"Loads the SPA from<br/>[HTTPS]"| static
+    customer -->|"Views balances and makes payments using"| spa
+    spa -->|"Makes API calls to<br/>[JSON/HTTPS]"| backend
+    backend -->|"Reads from and writes to<br/>[SQL/TCP]"| db
+    backend -->|"Caches and reads statements in<br/>[S3 API]"| store
+    backend -->|"Makes API calls to<br/>[XML/HTTPS]"| core
+    backend -->|"Sends e-mail using<br/>[HTTPS]"| ses
 
-    Rel(customer, static, "Loads the SPA from", "HTTPS")
-    Rel(customer, spa, "Views balances and makes payments using")
-    Rel(spa, backend, "Makes API calls to", "JSON/HTTPS")
-    Rel(backend, db, "Reads from and writes to", "SQL/TCP")
-    Rel(backend, store, "Caches and reads statements in", "S3 API")
-    Rel(backend, core, "Makes API calls to", "XML/HTTPS")
-    Rel(backend, ses, "Sends e-mail using", "HTTPS")
+    classDef person fill:#08427b,color:#fff,stroke:#052e56;
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
+    class customer person;
+    class spa,static,backend,db,store system;
+    class core,ses ext;
 ```
 
-> **Layout note:** Mermaid's native C4 auto-layout is finicky. Nudge it with
-> directional relationships (`Rel_U/Rel_D/Rel_L/Rel_R`), `UpdateLayoutConfig`,
-> and `UpdateRelStyle(..., $offsetX, $offsetY)`. If layout control matters more
-> than semantic tags, a styled `flowchart` with subgraphs is a valid fallback —
-> `references/mermaid-c4-syntax.md` covers when and how.
+> **Layout note:** control layout with the diagram direction (`flowchart TB`/`LR`),
+> node ordering, and invisible edges (`a ~~~ b`) to nudge placement. Shape signals
+> the abstraction (stadium = person, cylinder = data store, subroutine = queue);
+> colour (via `classDef`) signals internal vs. external. Because a flowchart has
+> no built-in C4 key, **always add a legend** —
+> `references/mermaid-flowchart-c4.md` covers the conventions.
 
 ## What makes the diagram *good* (not just correct)
 
@@ -161,8 +179,9 @@ The single biggest lever is **add more words**. Most bad diagrams are just named
 boxes. For every element, put inside it:
 
 - **Name** — what it's called.
-- **Type** — the abstraction, e.g. `[Software System]`, `[Container]`. Mermaid's
-  C4 shapes add this automatically; in a `flowchart` fallback, write it yourself.
+- **Type** — the abstraction, e.g. `[Software System]`, `[Container]`. Write it
+  into the node text yourself (the flowchart won't add it) — e.g. an italic
+  `<i>[Container: Java, Spring Boot]</i>` line.
 - **Technology** — for containers/components, the 1–2 most significant choices
   (e.g. "Java, Spring Boot"). Optional major version if upgrades are painful.
 - **Description** — a short sentence (or ≤7 bullets) on its responsibility.
@@ -191,7 +210,8 @@ Then:
   for Internet Banking System". So it stands alone when pulled out of context.
 - **Provide a key/legend** for any notation whose meaning isn't self-evident —
   every colour, shape, line style, and icon you use to *differentiate* things.
-  If it's obvious from Mermaid's built-in C4 shapes, a note suffices.
+  A flowchart has no built-in C4 key, so add one explicitly (a small legend
+  subgraph, or a note beside the diagram).
 - **Be consistent across the set.** Same element = same name, same notation, same
   placement (e.g. people at the top) on the context *and* container diagrams.
 - **Keep deployment details off** context/container diagrams — they belong on a

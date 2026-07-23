@@ -1,330 +1,355 @@
-# Mermaid C4 syntax reference
+# C4 in Mermaid flowcharts
 
-Mermaid supports C4 natively via five diagram kinds:
-`C4Context`, `C4Container`, `C4Component`, `C4Dynamic`, `C4Deployment`.
-The syntax is shared; the diagram kind sets the intended level.
+Mermaid ships an experimental native C4 mode (`C4Context`, `C4Container`, …), but
+its auto-layout is unreliable and **many renderers draw it incorrectly or not at
+all**. This skill therefore renders every C4 level as a **styled `flowchart`**.
+You give up the semantic C4 keywords, but you gain layout you can control and
+output that renders everywhere Mermaid runs.
 
-> Mermaid's C4 support is officially **experimental** and its auto-layout is the
-> weakest part. Get the model right first, then spend effort on layout hints.
-> If layout fights you, see "Flowchart fallback" at the end.
+The trade you accept: a flowchart only knows "nodes", "edges", and "subgraphs",
+so **you** carry the C4 method by hand — write the type into each node, label
+every edge with a preposition, use subgraphs for boundaries, and add a legend.
+Everything below is a convention layered on plain flowchart syntax; keep it
+consistent across a diagram set and the flowchart *reads* as C4.
 
 ## Table of contents
 1. Elements (people, systems, containers, components)
 2. Boundaries
 3. Relationships
-4. Layout & styling control
+4. Layout, styling & legend
 5. Worked example: System Context
 6. Worked example: Container
 7. Worked example: Component
 8. Worked example: Dynamic
 9. Worked example: Deployment
 10. System Landscape
-11. Flowchart fallback (when native C4 layout won't cooperate)
 
 ---
 
 ## 1. Elements
 
-Signature is `Kind(alias, "Label", "Technology", "Description")`. Technology is
-only present on container/component kinds. Every argument after the label is
-optional, but **you should almost always fill in description** (and technology
-for containers/components) — that's what makes C4 diagrams good.
+Each element is one flowchart node. Put **name / type / (technology) /
+description** inside the node text, separated by `<br/>`, with the type line in
+italics. This is the single biggest thing that makes the diagram good — never
+ship bare named boxes.
 
-People:
-```
-Person(alias, "Label", "Description")
-Person_Ext(alias, "Label", "Description")        %% external person
-```
+Node text pattern (fill in technology only for containers/components):
 
-Software systems:
 ```
-System(alias, "Label", "Description")
-System_Ext(alias, "Label", "Description")         %% external / opaque dependency
-SystemDb(alias, "Label", "Description")            %% system that is a datastore (cylinder)
-SystemQueue(alias, "Label", "Description")         %% system that is a queue
-SystemDb_Ext(alias, ...) / SystemQueue_Ext(alias, ...)
+alias["Name<br/><i>[Type: Technology]</i><br/>Short responsibility."]
 ```
 
-Containers (note the extra Technology arg):
-```
-Container(alias, "Label", "Technology", "Description")
-ContainerDb(alias, "Label", "Technology", "Description")     %% data store (cylinder)
-ContainerQueue(alias, "Label", "Technology", "Description")  %% queue/topic
-Container_Ext / ContainerDb_Ext / ContainerQueue_Ext         %% external variants
-```
+Pick the **node shape by abstraction**, so shape alone signals the kind:
 
-Components (same shape as containers, one level down):
-```
-Component(alias, "Label", "Technology", "Description")
-ComponentDb(alias, "Label", "Technology", "Description")
-ComponentQueue(alias, "Label", "Technology", "Description")
-Component_Ext / ComponentDb_Ext / ComponentQueue_Ext
-```
+| Abstraction | Shape | Syntax | Type line to write |
+|---|---|---|---|
+| Person | stadium | `alias(["…"])` | `[Person]` or `[Person, External]` |
+| Software system | rectangle | `alias["…"]` | `[Software System]` / `[Software System, External]` |
+| Container (app) | rectangle | `alias["…"]` | `[Container: Java, Spring Boot]` |
+| Container / component data store | cylinder | `alias[("…")]` | `[Container: MySQL]` |
+| Container / component queue/topic | subroutine | `alias[["…"]]` | `[Container: RabbitMQ]` |
+| Component | rectangle | `alias["…"]` | `[Component: Spring MVC]` |
 
-Use the `Db` variants for data stores and the `Queue` variants for message
-queues/topics — this is how you honour the rule that **queues are data-store
-containers**, not a "message bus" system.
+Colour — not shape — carries **internal vs. external** and any other
+differentiation; assign it with a `classDef` (see §4). Use the cylinder for data
+stores and the subroutine (double-bar) shape for queues/topics — that is how you
+honour the rule that **queues are data-store containers**, not a "message bus"
+system. Write the type line yourself for every node; nothing adds it for you.
+
+Examples:
+
+```
+customer(["Personal Banking Customer<br/><i>[Person]</i><br/>A customer of the bank."])
+ib["Internet Banking System<br/><i>[Software System]</i><br/>Online banking."]
+backend["Backend<br/><i>[Container: Java, Spring Boot]</i><br/>JSON/HTTP API."]
+db[("Database<br/><i>[Container: MySQL]</i><br/>Stores credentials.")]
+queue[["Event Queue<br/><i>[Container: RabbitMQ]</i><br/>Customer update events."]]
+```
 
 ## 2. Boundaries
 
-Boundaries draw the dashed box that gives the hierarchy its meaning.
+A boundary is a `subgraph`. Give it an id and a quoted label; the label should
+name the thing you are zooming into.
 
 ```
-Enterprise_Boundary(alias, "Label") { ... }     %% org boundary (landscape/context)
-System_Boundary(alias, "Label") { ... }         %% the system you're zooming into
-Container_Boundary(alias, "Label") { ... }       %% the container you're zooming into
-Boundary(alias, "Label", "type") { ... }         %% generic (e.g. grouping, region)
+subgraph ib["Internet Banking System"]
+    spa["…"]
+    backend["…"]
+end
 ```
 
-- On a **container diagram**, wrap your containers in a `System_Boundary` named
-  after your system. Keep external people/systems *outside* it.
-- On a **component diagram**, wrap your components in a `Container_Boundary`.
-- Use a generic `Boundary(... , "group")` to overlay non-C4 groupings:
-  microservice boundaries, architectural layers, teams, cloud regions.
+- On a **container diagram**, wrap your containers in a subgraph named after your
+  system. Keep external people/systems *outside* it.
+- On a **component diagram**, wrap your components in a subgraph named after the
+  container you are zooming into.
+- Use a nested subgraph to overlay non-C4 **groupings** — microservice
+  boundaries, architectural layers, teams, cloud regions. Distinguish a grouping
+  from a system boundary with a `style` fill or a `[type]` suffix in its label,
+  and describe it in the key.
+
+Subgraphs nest, which is what makes deployment diagrams (§9) work. Add a
+direction inside a subgraph with `direction LR` when its children should stack
+differently from the parent.
 
 ## 3. Relationships
 
-```
-Rel(from, to, "Label", "Technology")             %% Technology optional
-BiRel(a, b, "Label", "Technology")               %% two-way (use sparingly)
-```
-
-Directional variants force the arrow (and influence layout):
-```
-Rel_U / Rel_Up      Rel_D / Rel_Down
-Rel_L / Rel_Left    Rel_R / Rel_Right
-```
-
-Label rules (from the method): make it a sentence, end with a preposition
-("Makes API calls **to**"), and keep arrows unidirectional from initiator to
-receiver. Add the protocol as Technology for inter-container calls.
-
-## 4. Layout & styling control
+An edge is a labelled arrow. Keep the label a **sentence ending in a
+preposition** so the arrow direction is unambiguous, and put the protocol on its
+own line for inter-process calls.
 
 ```
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+customer -->|"Views balances and makes payments using"| spa
+spa -->|"Makes API calls to<br/>[JSON/HTTPS]"| backend
 ```
-Controls how many shapes/boundaries pack per row — the main lever for overall
-shape. Lower `$c4ShapeInRow` to force taller, narrower diagrams.
+
+- **Solid arrow `-->` = synchronous; dashed arrow `-.->` = asynchronous.** This
+  is the flowchart stand-in for C4's line-style convention — if you use it, say
+  so in the key.
+- **Arrows are unidirectional**, from initiator to receiver. Collapse a
+  request/response pair into one arrow. Draw two only when the interactions
+  genuinely differ (sync request + async event).
+- **Force direction** with the diagram-level `flowchart TB`/`LR` and by ordering
+  nodes; there is no per-edge `Rel_U/Rel_D`. Nudge stubborn nodes with invisible
+  edges (`a ~~~ b`) or by reordering declarations.
+- **No protocol on context-level arrows** — keep those high-level; technology
+  appears one level down on the container diagram.
+
+## 4. Layout, styling & legend
+
+**Direction.** `flowchart TB` (top-to-bottom) or `flowchart LR` (left-to-right)
+is your main layout lever. People usually read best at the top (`TB`).
+
+**Colour by class.** Define classes once and assign them — this is how you encode
+internal vs. external, existing vs. new, owned vs. third-party. The palette below
+matches the usual C4 look (dark blue = your system, grey = external, lighter blue
+= person).
 
 ```
-UpdateElementStyle(alias, $bgColor="grey", $fontColor="white", $borderColor="black")
-UpdateRelStyle(from, to, $textColor="blue", $lineColor="blue", $offsetX="10", $offsetY="-20")
-```
-`UpdateRelStyle` offsets are the fix when a relationship label lands in an
-awkward spot. Use `$tags`/`UpdateElementStyle` to colour-code (existing vs new,
-owned vs external, etc.) — and if you colour-code, **describe it in a key**.
+classDef person fill:#08427b,color:#fff,stroke:#052e56;
+classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
 
-Custom tags for legend-driven colouring:
+class customer person;
+class spa,backend,db system;
+class core,ses ext;
 ```
-AddElementTag("new", $bgColor="#3f8f29", $fontColor="white", $legendText="New in this release")
-Container(x, "X", "Java", "…", $tags="new")
+
+**Legend.** Because a flowchart has no built-in C4 key, add one explicitly as a
+small subgraph of sample nodes (or a Markdown note beside the diagram). Include
+every colour, shape, and line style you used to *differentiate* things.
+
 ```
+subgraph legend["Key"]
+    direction LR
+    lp(["Person"]):::person
+    ls["Your system / container"]:::system
+    le["External system"]:::ext
+end
+```
+
+If you colour-code for a release ("new in this version"), add a class for it and
+a matching legend entry — never leave a colour unexplained.
 
 ## 5. Worked example — System Context
 
+Relationships carry **no protocol/technology** here — that is deliberate. On a
+system context diagram, keep relationships high-level; protocols belong on the
+container diagram (§6).
+
 ```mermaid
-C4Context
-    title System Context diagram for Internet Banking System
+flowchart TB
+    customer(["Personal Banking Customer<br/><i>[Person]</i><br/>A customer of the bank with personal bank accounts."])
+    ib["Internet Banking System<br/><i>[Software System]</i><br/>Lets customers view balances and make payments."]
+    core["Core Banking System<br/><i>[Software System, External]</i><br/>Stores accounts and transactions; handles payments."]
+    ses["Amazon SES<br/><i>[Software System, External]</i><br/>Sends e-mails to customers (MFA, fraud alerts)."]
 
-    Person(customer, "Personal Banking Customer", "A customer of the bank with personal bank accounts.")
-    System(ib, "Internet Banking System", "Lets customers view account balances and make payments.")
-    System_Ext(core, "Core Banking System", "Stores accounts and transactions; handles payments.")
-    System_Ext(ses, "Amazon SES", "Sends e-mails to customers (MFA, fraud alerts).")
+    customer -->|"Views balances and makes payments using"| ib
+    ib -->|"Gets account data from and makes payments using"| core
+    ib -->|"Sends e-mail using"| ses
 
-    Rel(customer, ib, "Views balances and makes payments using")
-    Rel(ib, core, "Gets account data from and makes payments using", "XML/HTTPS")
-    Rel(ib, ses, "Sends e-mail using", "HTTPS")
-
-    UpdateLayoutConfig($c4ShapeInRow="2", $c4BoundaryInRow="1")
+    classDef person fill:#08427b,color:#fff,stroke:#052e56;
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
+    class customer person;
+    class ib system;
+    class core,ses ext;
 ```
 
 ## 6. Worked example — Container
 
+Wrap your containers in a subgraph named after the system; keep external
+people/systems outside it. Protocols now appear on the arrows.
+
 ```mermaid
-C4Container
-    title Container diagram for Internet Banking System
+flowchart TB
+    customer(["Personal Banking Customer<br/><i>[Person]</i><br/>A customer of the bank."])
 
-    Person(customer, "Personal Banking Customer", "A customer of the bank.")
+    subgraph ib["Internet Banking System"]
+        spa["Single-Page App<br/><i>[Container: JavaScript, Angular]</i><br/>Provides Internet banking features in the browser."]
+        static["Static Content<br/><i>[Container: Directory]</i><br/>Delivers the SPA's HTML/CSS/JS."]
+        backend["Backend<br/><i>[Container: Java, Spring Boot]</i><br/>Provides a JSON/HTTP API to the SPA."]
+        db[("Database<br/><i>[Container: MySQL]</i><br/>Stores usernames and hashed credentials.")]
+        store[("Statement Store<br/><i>[Container: AWS S3]</i><br/>Caches generated PDF statements.")]
+    end
 
-    System_Boundary(ib, "Internet Banking System") {
-        Container(spa, "Single-Page App", "JavaScript, Angular", "Provides Internet banking features in the browser.")
-        Container(static, "Static Content", "Directory", "Delivers the SPA's HTML/CSS/JS.")
-        Container(backend, "Backend", "Java, Spring Boot", "Provides a JSON/HTTP API to the SPA.")
-        ContainerDb(db, "Database", "MySQL", "Stores usernames and hashed credentials.")
-        ContainerDb(store, "Statement Store", "AWS S3", "Caches generated PDF statements.")
-    }
+    core["Core Banking System<br/><i>[Software System, External]</i><br/>Stores accounts and transactions."]
+    ses["Amazon SES<br/><i>[Software System, External]</i><br/>Sends e-mails to customers."]
 
-    System_Ext(core, "Core Banking System", "Stores accounts and transactions.")
-    System_Ext(ses, "Amazon SES", "Sends e-mails to customers.")
+    customer -->|"Loads the SPA from<br/>[HTTPS]"| static
+    customer -->|"Views balances and makes payments using"| spa
+    spa -->|"Makes API calls to<br/>[JSON/HTTPS]"| backend
+    backend -->|"Reads from and writes to<br/>[SQL/TCP]"| db
+    backend -->|"Caches and reads statements in<br/>[S3 API]"| store
+    backend -->|"Makes API calls to<br/>[XML/HTTPS]"| core
+    backend -->|"Sends e-mail using<br/>[HTTPS]"| ses
 
-    Rel(customer, static, "Loads the SPA from", "HTTPS")
-    Rel(customer, spa, "Views balances and makes payments using")
-    Rel(spa, backend, "Makes API calls to", "JSON/HTTPS")
-    Rel(backend, db, "Reads from and writes to", "SQL/TCP")
-    Rel(backend, store, "Caches and reads statements in", "S3 API")
-    Rel(backend, core, "Makes API calls to", "XML/HTTPS")
-    Rel(backend, ses, "Sends e-mail using", "HTTPS")
+    classDef person fill:#08427b,color:#fff,stroke:#052e56;
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
+    class customer person;
+    class spa,static,backend,db,store system;
+    class core,ses ext;
 ```
 
 ## 7. Worked example — Component
 
 Scope is a **single container** (here, the backend). Wrap components in a
-`Container_Boundary`; show only the neighbours the container talks to.
+subgraph named after the container; show only the neighbours the container talks
+to.
 
 ```mermaid
-C4Component
-    title Component diagram for Internet Banking System — Backend
+flowchart TB
+    spa["Single-Page App<br/><i>[Container: JavaScript, Angular]</i><br/>Provides banking features in the browser."]
+    db[("Database<br/><i>[Container: MySQL]</i><br/>Stores credentials.")]
+    core["Core Banking System<br/><i>[Software System, External]</i><br/>Stores accounts and transactions."]
+    ses["Amazon SES<br/><i>[Software System, External]</i><br/>Sends e-mails."]
 
-    Container(spa, "Single-Page App", "JavaScript, Angular", "Provides banking features in the browser.")
-    ContainerDb(db, "Database", "MySQL", "Stores credentials.")
-    System_Ext(core, "Core Banking System", "Stores accounts and transactions.")
-    System_Ext(ses, "Amazon SES", "Sends e-mails.")
+    subgraph backend["Backend"]
+        signin["Sign In API<br/><i>[Component: Spring MVC]</i><br/>Handles sign-in requests."]
+        accounts["Accounts Summary API<br/><i>[Component: Spring MVC]</i><br/>Provides a customer's bank accounts."]
+        statements["Statement API<br/><i>[Component: Spring MVC]</i><br/>Provides bank statements."]
+        security["Security Component<br/><i>[Component: Spring Bean]</i><br/>Validates credentials and issues/validates tokens."]
+        email["E-mail Component<br/><i>[Component: Spring Bean]</i><br/>Sends e-mail via SES."]
+        coreadapter["Core Banking Adapter<br/><i>[Component: Spring Bean]</i><br/>Calls the Core Banking System."]
+    end
 
-    Container_Boundary(backend, "Backend") {
-        Component(signin, "Sign In API", "Spring MVC", "Handles sign-in requests.")
-        Component(accounts, "Accounts Summary API", "Spring MVC", "Provides a customer's bank accounts.")
-        Component(statements, "Statement API", "Spring MVC", "Provides bank statements.")
-        Component(security, "Security Component", "Spring Bean", "Validates credentials and issues/validates tokens.")
-        Component(email, "E-mail Component", "Spring Bean", "Sends e-mail via SES.")
-        Component(coreadapter, "Core Banking Adapter", "Spring Bean", "Calls the Core Banking System.")
-    }
+    spa -->|"Makes API calls to<br/>[JSON/HTTPS]"| signin
+    spa -->|"Makes API calls to<br/>[JSON/HTTPS]"| accounts
+    spa -->|"Makes API calls to<br/>[JSON/HTTPS]"| statements
+    signin -->|"Uses"| security
+    accounts -->|"Uses"| security
+    statements -->|"Uses"| security
+    security -->|"Reads from and writes to<br/>[SQL/TCP]"| db
+    accounts -->|"Uses"| coreadapter
+    statements -->|"Uses"| coreadapter
+    email -->|"Sends e-mail using<br/>[HTTPS]"| ses
+    coreadapter -->|"Makes API calls to<br/>[XML/HTTPS]"| core
 
-    Rel(spa, signin, "Makes API calls to", "JSON/HTTPS")
-    Rel(spa, accounts, "Makes API calls to", "JSON/HTTPS")
-    Rel(spa, statements, "Makes API calls to", "JSON/HTTPS")
-    Rel(signin, security, "Uses")
-    Rel(accounts, security, "Uses")
-    Rel(statements, security, "Uses")
-    Rel(security, db, "Reads from and writes to", "SQL/TCP")
-    Rel(security, email, "Uses")
-    Rel(email, ses, "Sends e-mail using", "HTTPS")
-    Rel(accounts, coreadapter, "Uses")
-    Rel(statements, coreadapter, "Uses")
-    Rel(coreadapter, core, "Makes API calls to", "XML/HTTPS")
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef comp   fill:#85bbf0,color:#000,stroke:#5d82a8;
+    classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
+    class spa,db system;
+    class signin,accounts,statements,security,email,coreadapter comp;
+    class core,ses ext;
 ```
 
 ## 8. Worked example — Dynamic
 
-`C4Dynamic` auto-numbers relationships in the order you declare them, so the
-sequence tells a story. Show only the subset of elements the feature touches.
+A flowchart won't auto-number relationships, so **number them yourself** in the
+edge labels — the sequence tells the story. Show only the subset of elements the
+feature touches. Use `-.->` for any async step.
 
 ```mermaid
-C4Dynamic
-    title Dynamic diagram for Internet Banking System — Sign In
+flowchart TB
+    spa["Single-Page App<br/><i>[Container: JavaScript, Angular]</i><br/>Browser UI."]
+    db[("Database<br/><i>[Container: MySQL]</i><br/>Stores credentials.")]
 
-    ContainerDb(db, "Database", "MySQL", "Stores credentials.")
-    Container(spa, "Single-Page App", "JavaScript, Angular", "Browser UI.")
+    subgraph backend["Backend"]
+        signin["Sign In API<br/><i>[Component: Spring MVC]</i><br/>Handles sign-in requests."]
+        security["Security Component<br/><i>[Component: Spring Bean]</i><br/>Validates credentials."]
+    end
 
-    Container_Boundary(backend, "Backend") {
-        Component(signin, "Sign In API", "Spring MVC", "Handles sign-in requests.")
-        Component(security, "Security Component", "Spring Bean", "Validates credentials.")
-    }
+    spa -->|"1. Submits credentials to<br/>[JSON/HTTPS]"| signin
+    signin -->|"2. Validates credentials using"| security
+    security -->|"3. Gets user data from<br/>[SQL/TCP]"| db
+    db -->|"4. Returns user record to"| security
+    security -->|"5. Returns session token to"| signin
+    signin -->|"6. Returns session token to"| spa
 
-    Rel(spa, signin, "Submits credentials to", "JSON/HTTPS")
-    Rel(signin, security, "Validates credentials using")
-    Rel(security, db, "Gets user data from", "SQL/TCP")
-    Rel(db, security, "Returns user record to")
-    Rel(security, signin, "Returns session token to")
-    Rel(signin, spa, "Returns session token to")
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef comp   fill:#85bbf0,color:#000,stroke:#5d82a8;
+    class spa,db system;
+    class signin,security comp;
 ```
 
 ## 9. Worked example — Deployment
 
-`C4Deployment` uses nested `Deployment_Node`s to show infrastructure, with
+Model infrastructure as **nested subgraphs** (one per deployment node), with the
 **container instances placed inside them**. Draw **one diagram per environment**.
-`Node(...)` is an alias for `Deployment_Node`; `$type` is a free-text label.
-
-```mermaid
-C4Deployment
-    title Deployment diagram for Internet Banking System — Development
-
-    Deployment_Node(bank, "Bank WAN", "Corporate network") {
-        Deployment_Node(laptop, "Developer Laptop", "Windows / macOS") {
-            Deployment_Node(browser, "Web Browser", "Chrome/Firefox") {
-                Container(spa, "Single-Page App", "JavaScript, Angular", "Browser UI.")
-            }
-            Deployment_Node(docker, "Docker", "Docker Engine") {
-                Deployment_Node(nginx, "nginx", "Web server") {
-                    Container(static, "Static Content", "Directory", "Delivers the SPA.")
-                }
-                Deployment_Node(mysql, "MySQL", "Container") {
-                    ContainerDb(db, "Database", "MySQL", "Stores credentials.")
-                }
-            }
-            Deployment_Node(jvm, "JVM", "OpenJDK") {
-                Container(backend, "Backend", "Java, Spring Boot", "JSON/HTTP API.")
-            }
-        }
-    }
-
-    Rel(spa, backend, "Makes API calls to", "JSON/HTTP")
-    Rel(spa, static, "Loads from", "HTTP")
-    Rel(backend, db, "Reads/writes", "SQL/TCP")
-```
-
-For production, add `Deployment_Node`s for the cloud region/services (e.g. AWS
-Fargate, RDS, S3), use `Node_L`/`Node_R` to place siblings, and remember to
-switch protocols to their secure variants (HTTP → HTTPS).
-
-## 10. System Landscape
-
-Mermaid has no dedicated landscape kind — use `C4Context` without a single
-system in focus. Show many systems + people, and use `Enterprise_Boundary` (or
-generic `Boundary`) to mark org/department boundaries.
-
-```mermaid
-C4Context
-    title System Landscape diagram for Big Bank
-
-    Person(customer, "Personal Banking Customer", "A bank customer.")
-    Person(staff, "Customer Service Staff", "Bank staff.")
-
-    Enterprise_Boundary(bank, "Big Bank") {
-        System(ib, "Internet Banking System", "Online banking.")
-        System(atm, "ATM", "Cash withdrawals.")
-        System(core, "Core Banking System", "System of record.")
-    }
-    System_Ext(ses, "Amazon SES", "E-mail delivery.")
-
-    Rel(customer, ib, "Uses")
-    Rel(customer, atm, "Withdraws cash using")
-    Rel(staff, core, "Uses")
-    Rel(ib, core, "Uses", "XML/HTTPS")
-    Rel(atm, core, "Uses")
-    Rel(ib, ses, "Sends e-mail using")
-```
-
-## 11. Flowchart fallback (when native C4 layout won't cooperate)
-
-Native C4 layout can't always be tamed, and some renderers don't support the C4
-kinds. A styled `flowchart` gives you full layout control at the cost of writing
-the type/legend yourself. Keep the *method* — put name/type/tech/description in
-the node text, label every edge with a preposition, wrap the system in a
-subgraph, and add a legend.
+Label each subgraph with the node name and its type/technology.
 
 ```mermaid
 flowchart TB
-    customer["Personal Banking Customer<br/><i>[Person]</i><br/>A customer of the bank."]
-
-    subgraph ib["Internet Banking System"]
-        spa["Single-Page App<br/><i>[Container: JavaScript, Angular]</i><br/>Browser UI."]
-        backend["Backend<br/><i>[Container: Java, Spring Boot]</i><br/>JSON/HTTP API."]
-        db[("Database<br/><i>[Container: MySQL]</i><br/>Credentials.")]
+    subgraph bank["Bank WAN [Corporate network]"]
+        subgraph laptop["Developer Laptop [Windows / macOS]"]
+            subgraph browser["Web Browser [Chrome/Firefox]"]
+                spa["Single-Page App<br/><i>[Container: JavaScript, Angular]</i><br/>Browser UI."]
+            end
+            subgraph docker["Docker [Docker Engine]"]
+                subgraph nginx["nginx [Web server]"]
+                    static["Static Content<br/><i>[Container: Directory]</i><br/>Delivers the SPA."]
+                end
+                subgraph mysqlnode["MySQL [Container]"]
+                    db[("Database<br/><i>[Container: MySQL]</i><br/>Stores credentials.")]
+                end
+            end
+            subgraph jvm["JVM [OpenJDK]"]
+                backend["Backend<br/><i>[Container: Java, Spring Boot]</i><br/>JSON/HTTP API."]
+            end
+        end
     end
 
-    core["Core Banking System<br/><i>[Software System]</i><br/>System of record."]
-
-    customer -->|"Views balances and makes payments using"| spa
-    spa -->|"Makes API calls to [JSON/HTTPS]"| backend
-    backend -->|"Reads from and writes to [SQL/TCP]"| db
-    backend -->|"Makes API calls to [XML/HTTPS]"| core
+    spa -->|"Makes API calls to<br/>[JSON/HTTP]"| backend
+    spa -->|"Loads from<br/>[HTTP]"| static
+    backend -->|"Reads/writes<br/>[SQL/TCP]"| db
 
     classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
-    classDef ext fill:#999,color:#fff,stroke:#6b6b6b;
-    class spa,backend,db system;
-    class core ext;
+    class spa,static,backend,db system;
 ```
 
-Use `flowchart TB/LR` to force top-down or left-right; use nested `subgraph` for
-container/component boundaries; use `[( )]` cylinder nodes for data stores.
+For production, add subgraphs for the cloud region/services (e.g. AWS Fargate,
+RDS, S3) and switch protocols to their secure variants (HTTP → HTTPS).
+
+## 10. System Landscape
+
+A landscape is a context diagram without a single system in focus. Show many
+systems + people, and use a subgraph (styled as a grouping) to mark
+org/department boundaries.
+
+```mermaid
+flowchart TB
+    customer(["Personal Banking Customer<br/><i>[Person]</i><br/>A bank customer."])
+    staff(["Customer Service Staff<br/><i>[Person]</i><br/>Bank staff."])
+
+    subgraph bank["Big Bank [Enterprise]"]
+        ib["Internet Banking System<br/><i>[Software System]</i><br/>Online banking."]
+        atm["ATM<br/><i>[Software System]</i><br/>Cash withdrawals."]
+        core["Core Banking System<br/><i>[Software System]</i><br/>System of record."]
+    end
+
+    ses["Amazon SES<br/><i>[Software System, External]</i><br/>E-mail delivery."]
+
+    customer -->|"Uses"| ib
+    customer -->|"Withdraws cash using"| atm
+    staff -->|"Uses"| core
+    ib -->|"Gets account data from and makes payments using"| core
+    atm -->|"Uses"| core
+    ib -->|"Sends e-mail using"| ses
+
+    classDef person fill:#08427b,color:#fff,stroke:#052e56;
+    classDef system fill:#1168bd,color:#fff,stroke:#0b4884;
+    classDef ext    fill:#999,color:#fff,stroke:#6b6b6b;
+    class customer,staff person;
+    class ib,atm,core system;
+    class ses ext;
+```
