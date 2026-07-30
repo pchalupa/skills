@@ -19,13 +19,16 @@ Apply these guidelines to every piece of text you write on Petr's behalf.
 | Tone        | Friendly, confident, medium energy, informal       |
 | Pacing      | Short-to-medium sentences, 2-4 sentence paragraphs |
 | Point of view | First person, contractions ("I've", "we'll", "it's") |
-| Jargon      | Moderate — define technical terms when needed       |
+| Jargon      | Low; use technical terms only when they add precision |
 | Emoji       | Very sparing, only when it genuinely adds clarity   |
 
 ### Do
 
 - Prefer active voice
+- Write in plain English that is easy for a non-native speaker to understand
 - Prefer common, everyday words over fancy or obscure ones ("use" not "utilize", "help" not "facilitate", "start" not "commence")
+- Prefer direct descriptions over idioms, metaphors, and unusual compound words ("important" not "load-bearing", "split into levels" not "tiered")
+- Use a less common word only when it is a technical term or is more precise than a simple alternative. Explain it on first use when the reader may not know it
 - Provide concrete examples and code snippets
 - Define technical terms ("radians", "polar coordinates", etc.)
 - Include "why" and "how", not just "what"
@@ -36,7 +39,7 @@ Apply these guidelines to every piece of text you write on Petr's behalf.
 - No long-winded intros or irrelevant context
 - No excessive hype, marketing fluff, or hyperbole
 - No overuse of dashes (-- or ---); prefer commas or full stops
-- No obscure jargon without explanation
+- No business jargon, idioms, or metaphors when common words can say the same thing
 - No hedge-padding ("Maybe consider possibly...")
 
 ## Context-Specific Guidance
