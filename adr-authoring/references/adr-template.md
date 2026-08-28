@@ -1,12 +1,11 @@
 ---
-status: draft
 author: <name>
 date: <YYYY-MM-DD>
 ---
-# ADR-NNNN: <short decision title>
+# ADR-NN: <short decision title>
 
 ## Context
-> The problem and the forces at play (constraints, requirements, relevant open questions or dependencies). State the forces in tension and keep the language value-neutral — facts, not opinions.
+> The problem and the forces at play (constraints, requirements, relevant open questions or dependencies). State the forces in tension and keep the language value-neutral — facts, not opinions. Link any record, technology, or file you name — `[RFC-05](../requests-for-comments/RFC-05-....md)`, the library's own documentation — the first time it appears.
 
 ## Decision
 > What we will do, in full sentences and active voice ("We will …").

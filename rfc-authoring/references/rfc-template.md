@@ -1,5 +1,4 @@
 ---
-status: draft
 authors: <name>
 reviewers: <names / teams>
 created: YYYY-MM-DD
@@ -7,7 +6,7 @@ comment-by: YYYY-MM-DD
 decision-by: YYYY-MM-DD
 ---
 
-# RFC-NNNN: <Title>
+# RFC-NN: <Title>
 
 ## Summary
 
@@ -15,7 +14,7 @@ One paragraph a busy reader can skim and understand the ask. What are we proposi
 
 ## Background & problem
 
-What is the situation today, and why does it need a decision now? State the constraints and forces in tension as value-neutral facts. Name any dependency, risk, or `ADR-NNNN` this RFC touches. If the problem is only visible to one side or team, say so.
+What is the situation today, and why does it need a decision now? State the constraints and forces in tension as value-neutral facts. Name any dependency, risk, or ADR this RFC touches, linking each record and technology the first time it appears. If the problem is only visible to one side or team, say so.
 
 ## Proposal
 
@@ -35,4 +34,4 @@ What we accept by choosing the proposal, the risks it introduces, and the questi
 
 ## Decision & outcome
 
-_Recorded when the RFC is done: the outcome (accepted, rejected, or withdrawn), what was decided, by whom, in a new `ADR-NNNN`. Leave blank until decided._
+_Recorded when the RFC is closed: the outcome (accepted, rejected, or withdrawn), what was decided, by whom, and a link to the resulting ADR. Leave blank until decided._
