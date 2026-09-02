@@ -1,9 +1,0 @@
- {
-    "schema_version": 1,
-    "name": "@pchalupa/skills",
-    "version": "1.0.0",
-    "skills": ["./rfc-authoring"],
-    "dependencies": {
-      "grill-me": "mattpocock/skills"
-    }
-  }

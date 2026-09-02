@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "pchalupa-skills",
+  "description": "Petr Chalupa's personal AI-tool skills.",
+  "author": {
+    "name": "Petr Chalupa",
+    "url": "https://github.com/pchalupa"
+  },
+  "homepage": "https://github.com/pchalupa/skills",
+  "repository": "https://github.com/pchalupa/skills",
+  "license": "MIT",
+  "keywords": ["skills", "personal", "documentation", "frontend"]
+}
