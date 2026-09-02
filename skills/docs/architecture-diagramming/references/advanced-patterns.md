@@ -4,14 +4,14 @@ Guidance for the situations where the four levels aren't enough on their own: mi
 
 ## Groupings vs. new abstractions
 
-People often ask to add levels (subsystems, DDD bounded contexts, architectural layers, libraries). Resist that. The power of C4 is its *fixed* small set of abstractions. Instead, overlay these concepts as **groupings** (a nested `subgraph`, styled distinctly and named in the key) around existing elements:
+People often ask to add levels (subsystems, DDD bounded contexts, architectural layers, libraries). Resist that. The power of C4 is its _fixed_ small set of abstractions. Instead, overlay these concepts as **groupings** (a nested `subgraph`, styled distinctly and named in the key) around existing elements:
 
 - **Architectural layers** (UI / business logic / data) → a `subgraph` grouping the components within a container. The layers don't replace components; they organise them.
 - **Modules/libraries** (.jar, .dll, Maven/Gradle modules) → a `subgraph` grouping the components sourced from each module.
 - **DDD bounded context** → a grouping of systems, containers, or components depending on how it maps to the code/org.
 - **Organisational department** → a grouping of software systems (as in a system landscape diagram).
 
-This keeps the semantics intact while telling the richer story. If you *genuinely* need a new abstraction level, treat it as an advanced maneuver: you must define it precisely, or you slide back into the ambiguous ad-hoc diagrams C4 exists to fix.
+This keeps the semantics intact while telling the richer story. If you _genuinely_ need a new abstraction level, treat it as an advanced maneuver: you must define it precisely, or you slide back into the ambiguous ad-hoc diagrams C4 exists to fix.
 
 ## Microservices — three stages
 
@@ -44,7 +44,7 @@ Why not model a microservice as one container labeled "Java and MySQL"? Because 
 - From team XYZ's viewpoint, services A/B/C are **external software systems** — opaque boxes. XYZ's context diagram shows them outside its boundary.
 - Team A's own container diagram shows A's internals (API + schema).
 
-**Don't draw a single container diagram spanning multiple teams' systems** (all their internals on one canvas). It looks fine but encodes coupling: you're asserting knowledge of *how* other teams' systems work internally, and it breaks the moment they refactor. Treat other teams' systems as opaque.
+**Don't draw a single container diagram spanning multiple teams' systems** (all their internals on one canvas). It looks fine but encodes coupling: you're asserting knowledge of _how_ other teams' systems work internally, and it breaks the moment they refactor. Treat other teams' systems as opaque.
 
 ## Message-driven architectures
 
@@ -64,6 +64,7 @@ flowchart TB
 ```
 
 Notes:
+
 - Make the label specific: "Sends **customer update events** to", not the generic "Sends messages to".
 - Modeling queues/topics as containers also decouples them from deployment: at dev time one broker may host all queues; in prod they may be split across clusters. That's a deployment-diagram concern, not a container-diagram one.
 - **Simplified variant:** for simple point-to-point, you may omit the queue container and move its name onto the arrow ("Sends X to [via Queue 1]"). Cleaner, but the queue is less evident — a legitimate trade-off, your choice.
@@ -84,8 +85,8 @@ When there are 70 or 700 elements, not 7:
 
 - **"Not shown for brevity."** Cross-cutting elements (logging, auditing) with edges from everything create clutter. Either omit them with a diagram note ("all components log via a logging component, not shown for brevity"), or draw the element but annotate its users with a symbol described in the key instead of drawing every arrow.
 - **Split the diagram.** Prefer several small, focused diagrams over one giant one: one context diagram per business capability; one container/component diagram per feature/slice/use-case. You lose the single "big picture" but each diagram is comprehensible. (Trivial with a modeling tool; tedious by hand.)
-- **Perspectives.** To add ownership/security/tech-debt info without clutter, think of it as a *layer* over an existing diagram (colour-coding + a key, or tooltips) rather than a new diagram. Colour-code and describe it in the key.
-- **Simplify the design.** If the diagram is an unmanageable tangle, the *architecture* may be the problem. The diagram is a feedback loop.
+- **Perspectives.** To add ownership/security/tech-debt info without clutter, think of it as a _layer_ over an existing diagram (colour-coding + a key, or tooltips) rather than a new diagram. Colour-code and describe it in the key.
+- **Simplify the design.** If the diagram is an unmanageable tangle, the _architecture_ may be the problem. The diagram is a feedback loop.
 - **Alternative visualisations.** Boxes-and-arrows isn't the only option; a model can also be rendered as a force-directed graph or a tree for exploration. (Beyond Mermaid's scope, but worth suggesting for genuinely large models.)
 
 ## The model-code gap (why this matters)
@@ -94,16 +95,17 @@ We reason about software as components and layers, but languages have no "compon
 
 ## Diagramming vs. modeling (and why it scales)
 
-Most teams *diagram*: they draw independent pictures in a general-purpose tool (Visio, draw.io, or hand-authored Mermaid like this skill produces). The tool only knows "shapes", so it can't validate anything, can't answer "show all dependencies of X", can't auto-build a key, and — worst at scale — doesn't know that a box on the context diagram and a box on the container diagram are the *same element*. Rename or recolour one and you must manually fix every copy.
+Most teams _diagram_: they draw independent pictures in a general-purpose tool (Visio, draw.io, or hand-authored Mermaid like this skill produces). The tool only knows "shapes", so it can't validate anything, can't answer "show all dependencies of X", can't auto-build a key, and — worst at scale — doesn't know that a box on the context diagram and a box on the container diagram are the _same element_. Rename or recolour one and you must manually fix every copy.
 
-*Modeling* fixes this: you define one non-visual **model** — a directed graph of elements (nodes) and relationships (edges), each defined once — and render many **views** (diagrams) as subsets of it. Renaming is trivial, consistency is free, and the same model can be rendered as boxes-and-arrows, a force-directed graph, a tree, or queried like a graph database. Structurizr (and its text DSL) is the canonical C4 modeling tool.
+_Modeling_ fixes this: you define one non-visual **model** — a directed graph of elements (nodes) and relationships (edges), each defined once — and render many **views** (diagrams) as subsets of it. Renaming is trivial, consistency is free, and the same model can be rendered as boxes-and-arrows, a force-directed graph, a tree, or queried like a graph database. Structurizr (and its text DSL) is the canonical C4 modeling tool.
 
-**What this means for this skill:** you produce Mermaid diagrams (the diagramming approach), so *you* are the one keeping elements consistent across a set — do it deliberately (same alias, name, tech, description everywhere). For a large or long-lived system where the user will maintain many synced diagrams, it's worth *recommending* a modeling tool (Structurizr, IcePanel, Likec4) rather than hand-maintained Mermaid — say so.
+**What this means for this skill:** you produce Mermaid diagrams (the diagramming approach), so _you_ are the one keeping elements consistent across a set — do it deliberately (same alias, name, tech, description everywhere). For a large or long-lived system where the user will maintain many synced diagrams, it's worth _recommending_ a modeling tool (Structurizr, IcePanel, LikeC4) rather than hand-maintained Mermaid — say so.
 
 A rough maturity ladder the book uses, useful for meeting a team where they are:
+
 1. **Initial** — no diagrams. 2. **Ad hoc** — ambiguous boxes-and-arrows.
-3. **Defined** — C4 abstractions + notation guidelines (add text, use a key); tooling irrelevant. 4. **Modeled** — a hand-crafted model with generated views.
-5. **Optimizing** — models partly generated from code/infra, org-wide landscapes auto-assembled, models queried as data. Adopting C4 with the guidance in this skill gets a team to level 3; recommend modeling tools to go further.
+2. **Defined** — C4 abstractions + notation guidelines (add text, use a key); tooling irrelevant. 4. **Modeled** — a hand-crafted model with generated views.
+3. **Optimizing** — models partly generated from code/infra, org-wide landscapes auto-assembled, models queried as data. Adopting C4 with the guidance in this skill gets a team to level 3; recommend modeling tools to go further.
 
 ## C4 + AI
 

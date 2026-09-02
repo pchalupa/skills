@@ -1,0 +1,13 @@
+{
+  "name": "skills",
+  "private": true,
+  "scripts": {
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "spell:check": "cspell lint --no-progress --show-suggestions \"**/*.{md,json,yaml,yml}\""
+  },
+  "devDependencies": {
+    "cspell": "10.2.0",
+    "oxfmt": "0.66.0"
+  }
+}

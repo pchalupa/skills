@@ -15,7 +15,7 @@ The exact output shape lives in [`references/rfc-template.md`](references/rfc-te
 
 ## 1. Orient
 
-*Done when you have told the user the RFC number you will use, and they have confirmed the decision is still open and needs reviewer input.*
+_Done when you have told the user the RFC number you will use, and they have confirmed the decision is still open and needs reviewer input._
 
 - Read the template (see above) — that is the exact shape of the output.
 - **RFCs always live in `docs/requests-for-comments/` in the repo root.** One known directory, so the next reader and the next agent find them without searching; create it as you write the first record into it. If the repo already keeps RFCs somewhere else (`docs/rfcs/`, a project folder), keep working there and tell the user where they belong; move them only if the user says so. Scan for existing `RFC-NN-*.md` files and determine the **next sequential number**, zero-padded to two digits (e.g. `RFC-04`). Numbers are monotonic and never reused. Tell the user the number you'll use.
@@ -24,7 +24,7 @@ The exact output shape lives in [`references/rfc-template.md`](references/rfc-te
 
 ## 2. Grill relentlessly
 
-*Done when the proposal, its impact on every affected team, at least two alternatives with the reason each lost, and the open questions blocking acceptance all have answers the user has confirmed.*
+_Done when the proposal, its impact on every affected team, at least two alternatives with the reason each lost, and the open questions blocking acceptance all have answers the user has confirmed._
 
 Interview the user one question at a time, giving your recommended answer each time, and don't move on from a branch until it's resolved. If a `grilling` (or `grill-me`) skill is available, invoke it to run this; otherwise conduct the interview directly. Pin down specifically:
 
@@ -39,7 +39,7 @@ If a question can be answered from the project's source materials or existing de
 
 ## 3. Draft
 
-*Only once the user confirms the thinking is settled. Done when every template section is filled, the reviewers and both dates are set, and the decision section is left for the outcome.*
+_Only once the user confirms the thinking is settled. Done when every template section is filled, the reviewers and both dates are set, and the decision section is left for the outcome._
 
 - Write to `docs/requests-for-comments/RFC-NN-<short-kebab-title>.md` using the template's sections exactly. Make the `<short-kebab-title>` name the decision under review — `choose-realtime-transport`, not `transport-proposal` — so the filename tells a reader picking from a directory listing what this RFC decides.
 - **Apply the Voice section below** — this is prose authored on the user's behalf; it must read as theirs, human and consistent, not generic AI output.
@@ -49,7 +49,7 @@ If a question can be answered from the project's source materials or existing de
   - **A technology, product, API, capability, or sourced fact** (pricing, retirement dates, version behaviour) — its official documentation.
   - **A sibling record** — a relative link that resolves from this file: `[ADR-03](../decisions/ADR-03-adopt-expo-as-the-framework.md)`, `[RFC-02](RFC-02-build-pipeline.md)`.
   - **Code and config** — a repo-relative path in backticks, or a link where the host renders one.
-  Resolve every path you write: a link into a file that does not exist is worse than plain text. Link on first mention only, and where you don't have a URL, name the thing and leave it unlinked rather than guessing at one.
+    Resolve every path you write: a link into a file that does not exist is worse than plain text. Link on first mention only, and where you don't have a URL, name the thing and leave it unlinked rather than guessing at one.
 - Created date is today. Fill Authors/Reviewers and the agreed dates. The accepted, rejected, or withdrawn outcome goes in _Decision & outcome_ once it is decided.
 - Leave **Decision & outcome** empty — it fills in when the RFC is closed. Review feedback itself is captured wherever the project collects it (e.g. inline comments), not in the file.
 - This is a document reviewers will read: no authoring scaffolding. Resolve or drop `(illustrative)` and `> Expected here:` prompts. An ID that names a file becomes a link to it; an ID that lives somewhere else, such as a RAID or ticket reference, stays as plain text.
@@ -58,17 +58,17 @@ If a question can be answered from the project's source materials or existing de
 
 ## 4. Point agents at it
 
-*Done when the repo's existing instruction file names this document with a read-trigger, carries the maintenance rules, and every path in it resolves — or when there is no such file and you have said so.*
+_Done when the repo's existing instruction file names this document with a read-trigger, carries the maintenance rules, and every path in it resolves — or when there is no such file and you have said so._
 
 The document earns nothing if the next agent never opens it, so make the repo's agent instructions name it.
 
 - **Update the instruction file the repo already has.** If `CLAUDE.md` is a symlink to `AGENTS.md` (`test -L`) or a short file importing it (`@./AGENTS.md`), write `AGENTS.md` only, and leave the symlink as it is.
 - **Where neither file exists, leave it that way** and tell the user the document's path instead. Whether the repo wants an agent instruction file is their call, not a side effect of writing one document.
-- **Keep a `## Documentation` section** holding one table row per document that exists, each naming *when* to read it rather than restating its title:
+- **Keep a `## Documentation` section** holding one table row per document that exists, each naming _when_ to read it rather than restating its title:
 
   ```markdown
-  | Document | Read it when |
-  |---|---|
+  | Document                      | Read it when                              |
+  | ----------------------------- | ----------------------------------------- |
   | `docs/requests-for-comments/` | a decision is still open and under review |
   ```
 

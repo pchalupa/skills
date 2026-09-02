@@ -86,23 +86,23 @@ Meaningful images need descriptive labels. Decorative images should be hidden fr
 
 Modern React Native accepts ARIA-style props alongside the `accessibility*` names. They map 1:1.
 
-| ARIA prop        | Maps to                                              |
-|------------------|------------------------------------------------------|
-| `aria-label`     | `accessibilityLabel`                                 |
-| `aria-hidden`    | `accessibilityElementsHidden` / `importantForAccessibility="no-hide-descendants"` |
-| `aria-disabled`  | `accessibilityState.disabled`                        |
-| `aria-checked`   | `accessibilityState.checked` (accepts `'mixed'`)     |
-| `aria-expanded`  | `accessibilityState.expanded`                        |
-| `aria-selected`  | `accessibilityState.selected`                        |
-| `aria-busy`      | `accessibilityState.busy`                            |
-| `aria-live`      | `accessibilityLiveRegion` (Android)                  |
-| `aria-modal`     | `accessibilityViewIsModal` (iOS)                     |
-| `aria-valuemin`  | `accessibilityValue.min`                             |
-| `aria-valuemax`  | `accessibilityValue.max`                             |
-| `aria-valuenow`  | `accessibilityValue.now`                             |
-| `aria-valuetext` | `accessibilityValue.text`                            |
-| `aria-labelledby`| `accessibilityLabelledBy` (Android)                  |
-| `role`           | `accessibilityRole` (takes precedence)               |
+| ARIA prop         | Maps to                                                                           |
+| ----------------- | --------------------------------------------------------------------------------- |
+| `aria-label`      | `accessibilityLabel`                                                              |
+| `aria-hidden`     | `accessibilityElementsHidden` / `importantForAccessibility="no-hide-descendants"` |
+| `aria-disabled`   | `accessibilityState.disabled`                                                     |
+| `aria-checked`    | `accessibilityState.checked` (accepts `'mixed'`)                                  |
+| `aria-expanded`   | `accessibilityState.expanded`                                                     |
+| `aria-selected`   | `accessibilityState.selected`                                                     |
+| `aria-busy`       | `accessibilityState.busy`                                                         |
+| `aria-live`       | `accessibilityLiveRegion` (Android)                                               |
+| `aria-modal`      | `accessibilityViewIsModal` (iOS)                                                  |
+| `aria-valuemin`   | `accessibilityValue.min`                                                          |
+| `aria-valuemax`   | `accessibilityValue.max`                                                          |
+| `aria-valuenow`   | `accessibilityValue.now`                                                          |
+| `aria-valuetext`  | `accessibilityValue.text`                                                         |
+| `aria-labelledby` | `accessibilityLabelledBy` (Android)                                               |
+| `role`            | `accessibilityRole` (takes precedence)                                            |
 
 Pick one style per component and stick with it. Mixing `aria-label` and `accessibilityLabel` on the same element is confusing, and `role` silently wins over `accessibilityRole`.
 
@@ -159,12 +159,12 @@ For sliders, steppers, and range inputs, use `accessibilityRole="adjustable"` wi
   accessibilityLabel="Champion difficulty filter"
   accessibilityValue={{ min: 1, max: 10, now: difficulty, text: `${difficulty} of 10` }}
   accessibilityActions={[
-    { name: 'increment', label: 'Increase difficulty' },
-    { name: 'decrement', label: 'Decrease difficulty' },
+    { name: "increment", label: "Increase difficulty" },
+    { name: "decrement", label: "Decrease difficulty" },
   ]}
   onAccessibilityAction={(event) => {
-    if (event.nativeEvent.actionName === 'increment') inc();
-    if (event.nativeEvent.actionName === 'decrement') dec();
+    if (event.nativeEvent.actionName === "increment") inc();
+    if (event.nativeEvent.actionName === "decrement") dec();
   }}
 >
   <DifficultyPips value={difficulty} />
@@ -252,16 +252,16 @@ Gestures (swipe to delete, long-press for options, drag to reorder) are invisibl
 
 ### Standard action names
 
-| Action       | iOS | Android | Trigger                                   |
-|--------------|-----|---------|-------------------------------------------|
-| `activate`   | yes | yes     | Double-tap with screen reader on          |
-| `increment`  | yes | yes     | Swipe up / volume up                      |
-| `decrement`  | yes | yes     | Swipe down / volume down                  |
-| `magicTap`   | yes | no      | Two-finger double-tap (primary action)    |
-| `escape`     | yes | no      | Two-finger Z gesture (back / dismiss)     |
-| `longpress`  | no  | yes     | Double-tap and hold                       |
-| `expand`     | no  | yes     | Expand a collapsible element              |
-| `collapse`   | no  | yes     | Collapse a collapsible element            |
+| Action      | iOS | Android | Trigger                                |
+| ----------- | --- | ------- | -------------------------------------- |
+| `activate`  | yes | yes     | Double-tap with screen reader on       |
+| `increment` | yes | yes     | Swipe up / volume up                   |
+| `decrement` | yes | yes     | Swipe down / volume down               |
+| `magicTap`  | yes | no      | Two-finger double-tap (primary action) |
+| `escape`    | yes | no      | Two-finger Z gesture (back / dismiss)  |
+| `longpress` | no  | yes     | Double-tap and hold                    |
+| `expand`    | no  | yes     | Expand a collapsible element           |
+| `collapse`  | no  | yes     | Collapse a collapsible element         |
 
 ### Custom actions
 
@@ -269,15 +269,15 @@ Gestures (swipe to delete, long-press for options, drag to reorder) are invisibl
 <View
   accessible
   accessibilityActions={[
-    { name: 'viewAbilities', label: 'View abilities' },
-    { name: 'addToTeam', label: 'Add to team' },
+    { name: "viewAbilities", label: "View abilities" },
+    { name: "addToTeam", label: "Add to team" },
   ]}
   onAccessibilityAction={(event) => {
     switch (event.nativeEvent.actionName) {
-      case 'viewAbilities':
+      case "viewAbilities":
         openAbilitySheet(champion);
         break;
-      case 'addToTeam':
+      case "addToTeam":
         addToTeam(champion);
         break;
     }
@@ -323,6 +323,7 @@ If a piece of UI updates dynamically (status message, loading indicator, form va
 ```
 
 Values:
+
 - `"none"` - no announcement (default)
 - `"polite"` - announces when user is idle (most cases)
 - `"assertive"` - interrupts immediately (errors, urgent alerts only)
@@ -331,14 +332,16 @@ Values:
 
 ```tsx
 // bad: TalkBack often misses this, element mounts/unmounts
-{status && (
-  <View accessibilityLiveRegion="polite">
-    <Text>{status}</Text>
-  </View>
-)}
+{
+  status && (
+    <View accessibilityLiveRegion="polite">
+      <Text>{status}</Text>
+    </View>
+  );
+}
 
 // good: element stays in the tree, content changes
-<Text accessibilityLiveRegion="polite">{status}</Text>
+<Text accessibilityLiveRegion="polite">{status}</Text>;
 ```
 
 ---
@@ -348,31 +351,32 @@ Values:
 For side-effects that have no visible text change (async completions, background sync, toasts the user might miss), use `AccessibilityInfo.announceForAccessibility`. Works on both platforms.
 
 ```tsx
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo } from "react-native";
 
 const sendInvite = async (player) => {
-  setStatus('sending');
+  setStatus("sending");
   try {
     await inviteToGame(player.id);
-    setStatus('sent');
+    setStatus("sent");
     AccessibilityInfo.announceForAccessibility(`Invite sent to ${player.name}`);
   } catch {
-    setStatus('busy');
+    setStatus("busy");
     AccessibilityInfo.announceForAccessibility(`${player.name} is currently in a game`);
   }
 };
 
 const loadChampions = () => {
   setLoading(true);
-  AccessibilityInfo.announceForAccessibility('Loading champions');
+  AccessibilityInfo.announceForAccessibility("Loading champions");
   fetchChampions().finally(() => {
     setLoading(false);
-    AccessibilityInfo.announceForAccessibility('Champions loaded');
+    AccessibilityInfo.announceForAccessibility("Champions loaded");
   });
 };
 ```
 
 Use for:
+
 - Async action results (invites sent, requests failed)
 - Data loading completion
 - Toast notifications the user might otherwise miss
@@ -387,8 +391,8 @@ Use for:
 After a state transition (modal opening, sheet dismissing, screen navigating), screen reader focus can land anywhere. Move it deliberately, then return it to the trigger on close.
 
 ```tsx
-import { useRef } from 'react';
-import { AccessibilityInfo, findNodeHandle, View, Text } from 'react-native';
+import { useRef } from "react";
+import { AccessibilityInfo, findNodeHandle, View, Text } from "react-native";
 
 const abilityRefs = useRef<Record<string, React.RefObject<View>>>({});
 const modalTitleRef = useRef<Text>(null);
@@ -427,10 +431,16 @@ The `setTimeout` matters. Focus moves after mount, otherwise the target isn't in
 If visual layout doesn't match logical reading order, use `experimental_accessibilityOrder` with `nativeID`s on children. Use sparingly - wrong order breaks things faster than it fixes them.
 
 ```tsx
-<View experimental_accessibilityOrder={['title', 'summary', 'cta']}>
-  <View accessible nativeID="cta"><Text>Get started</Text></View>
-  <Text accessible nativeID="title">Welcome</Text>
-  <Text accessible nativeID="summary">A short description.</Text>
+<View experimental_accessibilityOrder={["title", "summary", "cta"]}>
+  <View accessible nativeID="cta">
+    <Text>Get started</Text>
+  </View>
+  <Text accessible nativeID="title">
+    Welcome
+  </Text>
+  <Text accessible nativeID="summary">
+    A short description.
+  </Text>
 </View>
 ```
 
@@ -502,15 +512,15 @@ iOS doesn't need this. A visible `<Text>` immediately before the `<TextInput>` i
 Sometimes the right call is to detect a screen reader and adapt. Complex gesture interactions (swipe carousels, drag-and-drop) can swap to simpler button-based alternatives. **Don't fork the whole app** - the goal is equivalent functionality, not a different experience.
 
 ```tsx
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo } from 'react-native';
+import { useEffect, useState } from "react";
+import { AccessibilityInfo } from "react-native";
 
 export const useScreenReader = () => {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     AccessibilityInfo.isScreenReaderEnabled().then(setIsActive);
-    const sub = AccessibilityInfo.addEventListener('screenReaderChanged', setIsActive);
+    const sub = AccessibilityInfo.addEventListener("screenReaderChanged", setIsActive);
     return () => sub.remove();
   }, []);
 
@@ -614,32 +624,28 @@ The selector you use in a test should be what a screen reader user hears. Tying 
 ### Use `@testing-library/react-native`'s role-based queries
 
 ```tsx
-import { render, screen, fireEvent } from '@testing-library/react-native';
+import { render, screen, fireEvent } from "@testing-library/react-native";
 
-test('ability button has accessible role and label', () => {
+test("ability button has accessible role and label", () => {
   render(<AbilityButton ability={orbOfDeception} />);
 
-  const button = screen.getByRole('button', {
-    name: 'Orb of Deception. Double tap for details.',
+  const button = screen.getByRole("button", {
+    name: "Orb of Deception. Double tap for details.",
   });
   expect(button).toBeOnTheScreen();
 });
 
-test('role chip announces selected state', () => {
+test("role chip announces selected state", () => {
   render(<RoleChip role="Mage" selected={true} />);
 
   // inline state filter (RTL v12+)
-  expect(
-    screen.getByRole('button', { name: 'Mage', selected: true }),
-  ).toBeOnTheScreen();
+  expect(screen.getByRole("button", { name: "Mage", selected: true })).toBeOnTheScreen();
 });
 
-test('disabled apply button', () => {
+test("disabled apply button", () => {
   render(<Filter hasSelection={false} />);
 
-  expect(
-    screen.getByRole('button', { name: 'Apply filter', disabled: true }),
-  ).toBeOnTheScreen();
+  expect(screen.getByRole("button", { name: "Apply filter", disabled: true })).toBeOnTheScreen();
 });
 ```
 
@@ -653,14 +659,14 @@ If `getByRole` can't find it, the component is missing `accessibilityRole`, whic
 // bad: testID only passes because we invented an attribute for tests
 <Pressable testID="submit-button" onPress={submit}>
   <Text>Submit</Text>
-</Pressable>
-screen.getByTestId('submit-button');
+</Pressable>;
+screen.getByTestId("submit-button");
 
 // good: selector works because the button is accessible
 <Pressable accessibilityRole="button" accessibilityLabel="Submit form" onPress={submit}>
   <Text>Submit</Text>
-</Pressable>
-screen.getByRole('button', { name: 'Submit form' });
+</Pressable>;
+screen.getByRole("button", { name: "Submit form" });
 ```
 
 Same rule for Playwright web tests: prefer `getByRole` and `getByLabel` over `data-testid`. A selector tied to an ARIA role is the same thing a screen reader, Playwright, and an AI agent all rely on.
@@ -681,7 +687,7 @@ const [submitBtn] = UNSAFE_getAllByProps({ onPress: submit });
 const button = UNSAFE_getByType(SubmitButton);
 
 // good: queries the same tree a screen reader uses
-const button = screen.getByRole('button', { name: 'Submit form' });
+const button = screen.getByRole("button", { name: "Submit form" });
 ```
 
 If the only way to find an element is via `UNSAFE_*`, the element isn't accessible. The test is telling you about a real bug.
@@ -692,10 +698,10 @@ Same principle at the E2E layer. Detox operates on the native view hierarchy and
 
 ```ts
 // good: matches what TalkBack / VoiceOver focuses
-await element(by.label('Submit form')).tap();
+await element(by.label("Submit form")).tap();
 
 // fallback: by.id for cases where labels collide
-await element(by.id('submit-form-bottom')).tap();
+await element(by.id("submit-form-bottom")).tap();
 ```
 
 ### When you genuinely need a `testID`
@@ -732,6 +738,7 @@ npm install --save-dev eslint-plugin-react-native-a11y
 ```
 
 Top catches:
+
 - `Touchable*` / `Pressable` without `accessibilityRole`.
 - Missing `accessibilityLabel` on icon-only buttons.
 - Using `accessibilityTraits` (deprecated) instead of `accessibilityRole`.
@@ -752,6 +759,7 @@ Automated tests catch regressions. Real devices catch experience bugs. Both matt
 ### Inspectors vs real devices
 
 Inspectors are good for structure. They can't tell you:
+
 - Whether gesture navigation feels natural
 - Whether announcement timing is correct
 - Whether focus transitions are disorienting
@@ -811,16 +819,16 @@ adb shell dumpsys accessibility                                         # dump n
 
 ## 17. Platform Differences Cheatsheet
 
-| Concern              | iOS                                          | Android                                          |
-|----------------------|----------------------------------------------|--------------------------------------------------|
-| Screen reader        | VoiceOver                                    | TalkBack                                         |
-| Hints                | User can disable                             | Always read                                      |
-| Hide decorative      | `accessibilityElementsHidden`                | `importantForAccessibility="no-hide-descendants"`|
-| Modal containment    | `accessibilityViewIsModal`                   | `importantForAccessibility` on background        |
-| Live regions         | N/A                                          | `accessibilityLiveRegion`, element must stay mounted |
-| Form label link      | Visual proximity + `accessibilityLabel`      | `nativeID` + `accessibilityLabelledBy`           |
-| Screen reader in sim | No, real device only                         | Yes via `adb`                                    |
-| Text transform trap  | OK                                           | `textTransform: 'uppercase'` + `letterSpacing` break TalkBack |
+| Concern              | iOS                                     | Android                                                       |
+| -------------------- | --------------------------------------- | ------------------------------------------------------------- |
+| Screen reader        | VoiceOver                               | TalkBack                                                      |
+| Hints                | User can disable                        | Always read                                                   |
+| Hide decorative      | `accessibilityElementsHidden`           | `importantForAccessibility="no-hide-descendants"`             |
+| Modal containment    | `accessibilityViewIsModal`              | `importantForAccessibility` on background                     |
+| Live regions         | N/A                                     | `accessibilityLiveRegion`, element must stay mounted          |
+| Form label link      | Visual proximity + `accessibilityLabel` | `nativeID` + `accessibilityLabelledBy`                        |
+| Screen reader in sim | No, real device only                    | Yes via `adb`                                                 |
+| Text transform trap  | OK                                      | `textTransform: 'uppercase'` + `letterSpacing` break TalkBack |
 
 ---
 

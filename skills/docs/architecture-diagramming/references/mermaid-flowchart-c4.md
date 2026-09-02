@@ -2,9 +2,10 @@
 
 Mermaid ships an experimental native C4 mode (`C4Context`, `C4Container`, …), but its auto-layout is unreliable and **many renderers draw it incorrectly or not at all**. This skill therefore renders every C4 level as a **styled `flowchart`**. You give up the semantic C4 keywords, but you gain layout you can control and output that renders everywhere Mermaid runs.
 
-The trade you accept: a flowchart only knows "nodes", "edges", and "subgraphs", so **you** carry the C4 method by hand — write the type into each node, label every edge with a preposition, use subgraphs for boundaries, and follow the diagram with a key table. Everything below is a convention layered on plain flowchart syntax; keep it consistent across a diagram set and the flowchart *reads* as C4.
+The trade you accept: a flowchart only knows "nodes", "edges", and "subgraphs", so **you** carry the C4 method by hand — write the type into each node, label every edge with a preposition, use subgraphs for boundaries, and follow the diagram with a key table. Everything below is a convention layered on plain flowchart syntax; keep it consistent across a diagram set and the flowchart _reads_ as C4.
 
 ## Table of contents
+
 1. Elements (people, systems, containers, components)
 2. Boundaries
 3. Relationships
@@ -30,14 +31,14 @@ alias["Name<br/><i>[Type: Technology]</i><br/>Short responsibility."]
 
 Pick the **node shape by abstraction**, so shape alone signals the kind:
 
-| Abstraction | Shape | Syntax | Type line to write |
-|---|---|---|---|
-| Person | stadium | `alias(["…"])` | `[Person]` or `[Person, External]` |
-| Software system | rectangle | `alias["…"]` | `[Software System]` / `[Software System, External]` |
-| Container (app) | rectangle | `alias["…"]` | `[Container: Java, Spring Boot]` |
-| Container / component data store | cylinder | `alias[("…")]` | `[Container: MySQL]` |
-| Container / component queue/topic | subroutine | `alias[["…"]]` | `[Container: RabbitMQ]` |
-| Component | rectangle | `alias["…"]` | `[Component: Spring MVC]` |
+| Abstraction                       | Shape      | Syntax         | Type line to write                                  |
+| --------------------------------- | ---------- | -------------- | --------------------------------------------------- |
+| Person                            | stadium    | `alias(["…"])` | `[Person]` or `[Person, External]`                  |
+| Software system                   | rectangle  | `alias["…"]`   | `[Software System]` / `[Software System, External]` |
+| Container (app)                   | rectangle  | `alias["…"]`   | `[Container: Java, Spring Boot]`                    |
+| Container / component data store  | cylinder   | `alias[("…")]` | `[Container: MySQL]`                                |
+| Container / component queue/topic | subroutine | `alias[["…"]]` | `[Container: RabbitMQ]`                             |
+| Component                         | rectangle  | `alias["…"]`   | `[Component: Spring MVC]`                           |
 
 Colour — not shape — carries **internal vs. external** and any other differentiation; assign it with a `classDef` (see §4). Use the cylinder for data stores and the subroutine (double-bar) shape for queues/topics — that is how you honour the rule that **queues are data-store containers**, not a "message bus" system. Write the type line yourself for every node; nothing adds it for you.
 
@@ -62,7 +63,7 @@ subgraph ib["Internet Banking System"]
 end
 ```
 
-- On a **container diagram**, wrap your containers in a subgraph named after your system. Keep external people/systems *outside* it.
+- On a **container diagram**, wrap your containers in a subgraph named after your system. Keep external people/systems _outside_ it.
 - On a **component diagram**, wrap your components in a subgraph named after the container you are zooming into.
 - Use a nested subgraph to overlay non-C4 **groupings** — microservice boundaries, architectural layers, teams, cloud regions. Distinguish a grouping from a system boundary with a `style` fill or a `[type]` suffix in its label, and describe it in the key.
 
@@ -100,18 +101,18 @@ class core,ses ext;
 
 **Key.** A flowchart has no built-in C4 key, so every diagram needs one. Put it in a **Markdown table directly beneath the diagram**, not in a `subgraph` inside it. A legend subgraph competes with the real elements for layout, and the renderer will float it wherever it likes; a table sits where you put it, wraps on narrow screens, and stays readable in a diff.
 
-One row per notation you used to *differentiate* things — every colour, shape, and line style:
+One row per notation you used to _differentiate_ things — every colour, shape, and line style:
 
 ```markdown
-| Notation | Meaning |
-|---|---|
-| Dark blue | The system in focus |
-| Grey | External system, outside your control |
-| Stadium shape | Person or role |
-| Cylinder | Data store |
-| Subroutine shape | Message queue or topic |
-| Dashed edge | Asynchronous communication |
-| Dashed border | Out of scope for this release |
+| Notation         | Meaning                               |
+| ---------------- | ------------------------------------- |
+| Dark blue        | The system in focus                   |
+| Grey             | External system, outside your control |
+| Stadium shape    | Person or role                        |
+| Cylinder         | Data store                            |
+| Subroutine shape | Message queue or topic                |
+| Dashed edge      | Asynchronous communication            |
+| Dashed border    | Out of scope for this release         |
 ```
 
 List only the notation this diagram actually uses. If you colour-code for a release ("new in this version"), add the class and give it a row — every colour gets an explanation.
@@ -139,13 +140,13 @@ flowchart TB
     class core,ses ext;
 ```
 
-| Notation | Meaning |
-|---|---|
-| Dark blue | The system in focus |
-| Grey | External system, outside your control |
-| Stadium shape | Person |
+| Notation      | Meaning                               |
+| ------------- | ------------------------------------- |
+| Dark blue     | The system in focus                   |
+| Grey          | External system, outside your control |
+| Stadium shape | Person                                |
 
-*Each diagram below carries its own key in real use. They're omitted from the remaining worked examples to keep the notation in focus.*
+_Each diagram below carries its own key in real use. They're omitted from the remaining worked examples to keep the notation in focus._
 
 ## 6. Worked example — Container
 

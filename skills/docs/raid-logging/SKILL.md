@@ -10,16 +10,16 @@ description: >-
 
 # RAID Log
 
-A RAID log is a central register that catalogs a project's **R**isks, **A**ssumptions, **I**ssues, and **D**ependencies in one place, so the team has a single source of truth for the factors shaping the project. It is not written once — it is a **living document**: only accurate when updated regularly, and most valuable when reviewed in status meetings and reflected on in the post-mortem. This skill follows Asana's RAID framing ([asana.com/resources/raid-log](https://asana.com/resources/raid-log)).
+A RAID log is a central register of **Risks (R)**, **Assumptions (A)**, **Issues (I)**, and **Dependencies (D)** in one place, so the team has a single source of truth for the factors shaping the project. It is not written once — it is a **living document**: only accurate when updated regularly, and most valuable when reviewed in status meetings and reflected on in the post-mortem. This skill follows Asana's RAID framing ([asana.com/resources/raid-log](https://asana.com/resources/raid-log)).
 
 **D is always Dependencies here** — a settled technical decision belongs in an ADR, an open one in an RFC, and duplicating either in the log gives the team two records to keep in sync. **A** is the one flexible letter; pick the meaning that fits the project and use it consistently:
 
-- **R — Risks.** Potential problems that could negatively affect your project, identified during planning so they can be mitigated proactively before they occur. *Example: R-1 — a third-party API may be unavailable during integration testing (Likelihood MEDIUM, Impact HIGH, owned by the integration lead).*
+- **R — Risks.** Potential problems that could negatively affect your project, identified during planning so they can be mitigated proactively before they occur. _Example: R-1 — a third-party API may be unavailable during integration testing (Likelihood MEDIUM, Impact HIGH, owned by the integration lead)._
 - **A — Assumptions or Actions.** **Assumptions** are factors the team believes will hold true and plans around — best for **long-term projects that require significant forethought**. **Actions** are tasks that need completing — best for **projects with many moving parts** to track. Use ownership to keep either accountable.
 - **I — Issues.** Problems that occur during a project that you did **not** anticipate. Unlike risks — which you plan for in advance and manage through mitigation — issues pop up unexpectedly and require immediate resolution.
 - **D — Dependencies.** Tasks blocked until another task is completed elsewhere, usually by another team. Record what you're waiting on, who owns it on their side, and what stalls here until it lands.
 
-The line that trips people up most: **a risk is a *potential* problem you anticipate; an issue is an *actual* problem that already occurred.** If a logged risk materialises, it becomes an issue.
+The line that trips people up most: **a risk is a _potential_ problem you anticipate; an issue is an _actual_ problem that already occurred.** If a logged risk materialises, it becomes an issue.
 
 Confirm which **A** variant the project uses before drafting (or follow the working repo's existing choice) — don't assume.
 
@@ -27,7 +27,7 @@ The exact output shape lives in [`references/raid-template.md`](references/raid-
 
 ## 1. Orient
 
-*Done when you have told the user which log you will write to, which of the four letters the entry belongs under, and the next free ID.*
+_Done when you have told the user which log you will write to, which of the four letters the entry belongs under, and the next free ID._
 
 - Read the template (see above) — that is the exact shape of the output.
 - **The log always lives at `docs/raid-log.md` in the repo root.** One log per repo, one known path, so the next reader and the next agent find it without searching. Create `docs/` as you write the first file into it.
@@ -37,7 +37,7 @@ The exact output shape lives in [`references/raid-template.md`](references/raid-
 
 ## 2. Capture each entry
 
-*Done when every column of the entry's table has a value, including an owner and a status from that table's vocabulary.*
+_Done when every column of the entry's table has a value, including an owner and a status from that table's vocabulary._
 
 Every entry shares a small common core; each type then adds the fields its table defines (see the template for exact columns):
 
@@ -57,7 +57,7 @@ Ask only for what the user cannot point you to. If the answer is in a PRD, RFC, 
 
 ## 3. Draft or update the log
 
-*Done when the entry is in the right table, the header's last-reviewed date is current, and no existing ID has moved.*
+_Done when the entry is in the right table, the header's last-reviewed date is current, and no existing ID has moved._
 
 - Write to `docs/raid-log.md` using the template's structure exactly: a short header, then a section (table) per category with the field set defined above.
 - **Assign stable, prefixed IDs**: `R-1` (risk), `A-1` (assumption/action), `I-1` (issue), `DE-1` (dependency), monotonic **per category**. IDs are never reused and never renumbered — closed items keep their ID so cross-references (from an ADR, RFC, ticket, or status report) stay valid.
@@ -72,7 +72,7 @@ Ask only for what the user cannot point you to. If the answer is in a PRD, RFC, 
 
 ## 4. Verify
 
-*Done when every check below passes.*
+_Done when every check below passes._
 
 - **Every entry is in the correct category** — risks are anticipated potential problems; issues are actual problems that occurred; dependencies are work blocked on someone else, not decisions the team made; the A variant matches what the project chose.
 - **Every entry has its type's field set** — ID, description, a single named owner, and status, plus the type-specific columns: risks have likelihood and impact; issues have a date raised and severity; assumptions have impact-if-wrong; dependencies name what they depend on and what they block.
@@ -83,17 +83,17 @@ Ask only for what the user cannot point you to. If the answer is in a PRD, RFC, 
 
 ## 5. Point agents at it
 
-*Done when the repo's existing instruction file names this document with a read-trigger, carries the maintenance rules, and every path in it resolves — or when there is no such file and you have said so.*
+_Done when the repo's existing instruction file names this document with a read-trigger, carries the maintenance rules, and every path in it resolves — or when there is no such file and you have said so._
 
 The document earns nothing if the next agent never opens it, so make the repo's agent instructions name it.
 
 - **Update the instruction file the repo already has.** If `CLAUDE.md` is a symlink to `AGENTS.md` (`test -L`) or a short file importing it (`@./AGENTS.md`), write `AGENTS.md` only, and leave the symlink as it is.
 - **Where neither file exists, leave it that way** and tell the user the document's path instead. Whether the repo wants an agent instruction file is their call, not a side effect of writing one document.
-- **Keep a `## Documentation` section** holding one table row per document that exists, each naming *when* to read it rather than restating its title:
+- **Keep a `## Documentation` section** holding one table row per document that exists, each naming _when_ to read it rather than restating its title:
 
   ```markdown
-  | Document | Read it when |
-  |---|---|
+  | Document           | Read it when                                                      |
+  | ------------------ | ----------------------------------------------------------------- |
   | `docs/raid-log.md` | you hit a risk, blocker, assumption or dependency worth recording |
   ```
 

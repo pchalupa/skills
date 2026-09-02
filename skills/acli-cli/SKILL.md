@@ -88,21 +88,21 @@ acli
 
 ## Common flags
 
-| Flag             | Notes                                                                                            |
-| ---------------- | ------------------------------------------------------------------------------------------------ |
-| `--json`         | Machine-readable output. Pipe to `jq` for queries.                                                |
-| `--csv`          | CSV output (search, list, blog list).                                                             |
-| `--web`          | Open the resource in a browser instead of printing.                                               |
-| `--from-json F`  | Read full payload from `F`. Pair with `--generate-json` to scaffold.                              |
-| `--generate-json`| Print an example JSON payload to stdout — pipe it to a file, edit, re-apply with `--from-json`.   |
-| `--from-file F`  | For `create`/`comment`: read summary/body from a file (plain text or ADF).                        |
-| `--key`          | Targeting: comma-separated work item keys, e.g. `--key "TEAM-1,TEAM-2"`.                          |
-| `--jql`          | Targeting: any JQL query, e.g. `--jql "project = TEAM AND status = 'To Do'"`.                     |
-| `--filter`       | Targeting: a saved Jira filter ID.                                                                |
-| `--yes` / `-y`   | Skip confirmation on bulk write operations. Use carefully.                                        |
-| `--ignore-errors`| For bulk ops: continue past failures instead of aborting.                                         |
-| `--paginate`     | Fetch all results across pages (search, filter list).                                             |
-| `--limit N`      | Cap result count.                                                                                 |
+| Flag              | Notes                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------- |
+| `--json`          | Machine-readable output. Pipe to `jq` for queries.                                              |
+| `--csv`           | CSV output (search, list, blog list).                                                           |
+| `--web`           | Open the resource in a browser instead of printing.                                             |
+| `--from-json F`   | Read full payload from `F`. Pair with `--generate-json` to scaffold.                            |
+| `--generate-json` | Print an example JSON payload to stdout — pipe it to a file, edit, re-apply with `--from-json`. |
+| `--from-file F`   | For `create`/`comment`: read summary/body from a file (plain text or ADF).                      |
+| `--key`           | Targeting: comma-separated work item keys, e.g. `--key "TEAM-1,TEAM-2"`.                        |
+| `--jql`           | Targeting: any JQL query, e.g. `--jql "project = TEAM AND status = 'To Do'"`.                   |
+| `--filter`        | Targeting: a saved Jira filter ID.                                                              |
+| `--yes` / `-y`    | Skip confirmation on bulk write operations. Use carefully.                                      |
+| `--ignore-errors` | For bulk ops: continue past failures instead of aborting.                                       |
+| `--paginate`      | Fetch all results across pages (search, filter list).                                           |
+| `--limit N`       | Cap result count.                                                                               |
 
 ## Work items
 

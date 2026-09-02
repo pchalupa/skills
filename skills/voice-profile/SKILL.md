@@ -14,13 +14,13 @@ Apply these guidelines to every piece of text you write on Petr's behalf.
 
 ## Core Voice
 
-| Attribute   | Value                                              |
-|-------------|----------------------------------------------------|
-| Tone        | Friendly, confident, medium energy, informal       |
-| Pacing      | Short-to-medium sentences, 2-4 sentence paragraphs |
-| Point of view | First person, contractions ("I've", "we'll", "it's") |
-| Jargon      | Low; use technical terms only when they add precision |
-| Emoji       | Very sparing, only when it genuinely adds clarity   |
+| Attribute     | Value                                                 |
+| ------------- | ----------------------------------------------------- |
+| Tone          | Friendly, confident, medium energy, informal          |
+| Pacing        | Short-to-medium sentences, 2-4 sentence paragraphs    |
+| Point of view | First person, contractions ("I've", "we'll", "it's")  |
+| Jargon        | Low; use technical terms only when they add precision |
+| Emoji         | Very sparing, only when it genuinely adds clarity     |
 
 ### Do
 
@@ -51,6 +51,7 @@ Defer to project-specific conventions for format (e.g., Conventional Commits, PR
 Short, direct. Explain "why" in the body when non-obvious.
 
 **Good:**
+
 ```
 Fix touch handler cleanup in Canvas component
 
@@ -59,6 +60,7 @@ callbacks to fire after navigation.
 ```
 
 **Bad:**
+
 ```
 Fixed a bug where the touch handler wasn't being properly cleaned up
 which caused issues in some cases and needed to be addressed
@@ -77,6 +79,7 @@ Under 70 characters. Descriptive, no fluff.
 Lead with "what" and "why" in 2-4 sentences. Then implementation details if relevant. End with a test plan.
 
 **Good:**
+
 ```markdown
 ## Summary
 
@@ -97,6 +100,7 @@ broke at the top of the dial.
 ```
 
 **Bad:**
+
 ```markdown
 ## Summary
 
@@ -111,6 +115,7 @@ and more intuitive than ever before!!!
 Direct and constructive. Explain why. Give concrete suggestions with code when possible.
 
 **Good:**
+
 ```
 This allocates a new array on every render. Move it outside the
 component or wrap it in `useMemo`:
@@ -119,6 +124,7 @@ const options = useMemo(() => ['a', 'b', 'c'], [])
 ```
 
 **Bad:**
+
 ```
 Maybe you could consider possibly looking into whether this might
 potentially cause some performance issues in certain scenarios?
@@ -129,6 +135,7 @@ potentially cause some performance issues in certain scenarios?
 Problem statement first. Then reproduction steps or context. Then expected behavior.
 
 **Good:**
+
 ```markdown
 ## Problem
 
@@ -146,6 +153,7 @@ Continuous rotation without snapping.
 ```
 
 **Bad:**
+
 ```markdown
 In today's ever-changing world of gesture-based UI components, we've
 discovered an issue that needs addressing...
@@ -156,6 +164,7 @@ discovered an issue that needs addressing...
 Shortest form. Friendly and informal. Skip unnecessary greetings. Get to the point.
 
 **Good:**
+
 ```
 Pushed a fix for the knob snapping issue. Touch handler now
 tracks cumulative rotation instead of resetting at 360.
@@ -163,6 +172,7 @@ Can you test it on your end?
 ```
 
 **Bad:**
+
 ```
 Hey team! Hope everyone's having a wonderful day! I wanted to
 take a moment to share some exciting news about the incredible
@@ -174,6 +184,7 @@ progress we've made on the rotation bug! 🎉🚀🔥
 User-focused. What changed and why it matters. Group related changes.
 
 **Good:**
+
 ```markdown
 ### Knob component
 
@@ -184,6 +195,7 @@ User-focused. What changed and why it matters. Group related changes.
 ```
 
 **Bad:**
+
 ```markdown
 ### AMAZING UPDATE!!!
 
@@ -196,6 +208,7 @@ to our beloved knob component!!! 🎉🎉🎉
 Step-by-step structure. Define terms. Use code examples. Markdown headings.
 
 **Good:**
+
 ```markdown
 ## Knob Gesture
 
@@ -206,14 +219,15 @@ to map where the user's finger is to how far the knob should rotate.
 
 ### Basic usage
 
-​```tsx
+​`tsx
 <KnobGesture onRotate={(degrees) => console.log(degrees)}>
   <KnobVisual />
 </KnobGesture>
-​```
+​`
 ```
 
 **Bad:**
+
 ```markdown
 Welcome to the comprehensive guide to our revolutionary knob gesture
 system! In this document, we'll embark on an exciting journey through
@@ -225,6 +239,7 @@ the fascinating world of touch-based rotational input handling...
 Walk step-by-step from problem to solution. Explain tools/hooks and why they matter. Keep it practical and substance-first.
 
 **Good:**
+
 ```markdown
 ## Building a Rotary Knob with React Native Skia
 
@@ -239,8 +254,10 @@ cartesian touch coordinates (x, y) into an angle.
 ```
 
 **Bad:**
+
 ```markdown
 ## The Ultimate Guide to Building the Most Amazing Rotary Knob
+
 Component Ever Created in the History of React Native Development
 
 Have you ever dreamed of creating a knob component? Well, today is
