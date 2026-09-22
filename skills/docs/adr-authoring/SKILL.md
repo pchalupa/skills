@@ -23,7 +23,7 @@ The exact output shape lives in [`references/adr-template.md`](references/adr-te
 _Done when you have told the user the ADR number you will use and they have confirmed this is a decision already made._
 
 - Read the template (see above) — that is the exact shape of the output.
-- **ADRs always live in `docs/decisions/` in the repo root.** One known directory, so the next reader and the next agent find them without searching; create it as you write the first record into it. If the repo already keeps ADRs somewhere else (`docs/adr/`, a project folder), keep working there and tell the user where they belong; move them only if the user says so. Scan for existing `ADR-NN-*.md` files and determine the **next sequential number**, zero-padded to two digits (e.g. `ADR-04`). Numbers are monotonic and never reused, even for superseded decisions. Tell the user the number you'll use.
+- **ADRs always live in `docs/decisions/` in the repo root.** One known directory, so the next reader and the next agent find them without searching; create it as you write the first record into it. Scan for existing `ADR-NN-*.md` files and determine the **next sequential number**, zero-padded to two digits (e.g. `ADR-04`). Numbers are monotonic and never reused, even for superseded decisions. Tell the user the number you'll use.
 - If a `README.md` (or equivalent) sits alongside the ADRs, read it for the project's conventions and any "likely decisions to capture" list.
 - Check whether this decision touches an existing open question, dependency, or risk the project tracks — an ADR records a decision **already made**. If it is really still open and needs reviewer input, say so: it may belong in an RFC instead.
 
